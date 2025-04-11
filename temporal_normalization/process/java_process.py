@@ -17,7 +17,7 @@ def start_process(doc: Doc, expressions: list[TemporalExpression], jar_path):
         ["java", "-jar", jar_path],
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
-        text=True
+        text=True,
     )
 
     for line in java_process.stdout:
@@ -46,7 +46,9 @@ def gateway_conn(doc: Doc, expressions: list[TemporalExpression]) -> JavaGateway
     print("Python connection established.")
 
     if isinstance(doc, Doc):
-        java_object = gateway.jvm.ro.webdata.normalization.timespan.ro.TimeExpression(doc.text, False, "\n")
+        java_object = gateway.jvm.ro.webdata.normalization.timespan.ro.TimeExpression(
+            doc.text, False, "\n"
+        )
         time_expression = TemporalExpression(java_object)
 
         if time_expression.is_valid:
@@ -62,7 +64,9 @@ def check_java_version():
     try:
         if java_path:
             # Run the command to check the Java version
-            result = subprocess.run([java_path, "-version"], capture_output=True, text=True)
+            result = subprocess.run(
+                [java_path, "-version"], capture_output=True, text=True
+            )
 
             # Print the version information (Java version is printed to stderr)
             if result.returncode == 0:
@@ -72,7 +76,9 @@ def check_java_version():
                 if match:
                     crr_version = float(match.group(1))
                     if crr_version < min_version:
-                        console.error(f"Java {crr_version} is installed, but version {min_version} is required.")
+                        console.error(
+                            f"Java {crr_version} is installed, but version {min_version} is required."  # noqa 501
+                        )
                 else:
                     console.error("Could not extract Java version.")
             else:

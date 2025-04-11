@@ -3,13 +3,18 @@ import subprocess
 import spacy
 
 from temporal_normalization.commons.print_utils import console
-from temporal_normalization.index import create_normalized_component, TemporalNormalization  ## noqa: F401
+from temporal_normalization.index import (
+    create_normalized_component,  # noqa: F401
+    TemporalNormalization,  # noqa: F401
+)
 
 LANG = "ro"
 MODEL = "ro_core_news_sm"
-TEXT_RO = ("Sec al II-lea a.ch. a fost o perioadă de mari schimbări. "
-           "În secolul XX, tehnologia a avansat semnificativ. "
-           "Sec. 21 este adesea asociat cu globalizarea rapidă.")
+TEXT_RO = (
+    "Sec al II-lea a.ch. a fost o perioadă de mari schimbări. "
+    "În secolul XX, tehnologia a avansat semnificativ. "
+    "Sec. 21 este adesea asociat cu globalizarea rapidă."
+)
 
 if __name__ == "__main__":
     # Display a warning if the language of the text is not Romanian.
@@ -19,7 +24,7 @@ if __name__ == "__main__":
         # Load the spaCy model if it has already been downloaded
         nlp = spacy.load(MODEL)
     except OSError:
-        console.warning(f'Started downloading {MODEL}...')
+        console.warning(f"Started downloading {MODEL}...")
         # Download the Romanian model if it wasn't already downloaded
         subprocess.run(["python", "-m", "spacy", "download", MODEL])
         # Load the spaCy model

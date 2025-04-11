@@ -9,9 +9,11 @@ from temporal_normalization.commons.temporal_models import TemporalExpression
 from temporal_normalization.process.java_process import start_process
 
 try:
+
     @Language.factory("temporal_normalization")
     def create_normalized_component(nlp, name):
         return TemporalNormalization(nlp, name)
+
 except AttributeError:
     # spaCy 2.x
     pass
@@ -26,8 +28,7 @@ class TemporalNormalization:
 
     def __call__(self, doc: Doc) -> Doc:
         jar_path = os.path.join(
-            os.path.dirname(__file__),
-            'libs/temporal-normalization-1.6.jar'
+            os.path.dirname(__file__), "libs/temporal-normalization-1.6.jar"
         )
 
         expressions: list[TemporalExpression] = []
@@ -49,10 +50,16 @@ def _prepare_str_patterns(expressions: list[TemporalExpression]) -> list[str]:
     return matches
 
 
-def _retokenize(doc: Doc, str_matches: list[str], expressions: list[TemporalExpression]) -> None:
-    regex_matches: list[str] = [fr"{item}" for item in str_matches]
+def _retokenize(
+    doc: Doc, str_matches: list[str], expressions: list[TemporalExpression]
+) -> None:
+    regex_matches: list[str] = [rf"{item}" for item in str_matches]
     pattern = f"({'|'.join(regex_matches)})"
-    matches = list(re.finditer(pattern, remove_accents(doc.text), re.IGNORECASE)) if len(regex_matches) > 0 else []
+    matches = (
+        list(re.finditer(pattern, remove_accents(doc.text), re.IGNORECASE))
+        if len(regex_matches) > 0
+        else []
+    )
 
     with doc.retokenize() as retokenizer:
         for match in matches:
@@ -67,21 +74,33 @@ def _retokenize(doc: Doc, str_matches: list[str], expressions: list[TemporalExpr
 
             if start_token is not None and end_token is not None:
                 entity = Span(doc, start_token, end_token + 1, label="DATETIME")
-                expression = next((item for item in expressions if remove_accents(entity.text) in item.matches), None)
+                expression = next(
+                    (
+                        item
+                        for item in expressions
+                        if remove_accents(entity.text) in item.matches
+                    ),
+                    None,
+                )
 
                 if expression:
                     entity._.set("normalized", expression)
 
                 retokenizer.merge(entity)
             else:
-                print(f"Warning: Could not find tokens for match '{match.group()}' at {start_char}-{end_char}")
+                print(
+                    f"Warning: Could not find tokens for match '{match.group()}' "
+                    f"at {start_char}-{end_char}"
+                )
 
 
 def remove_accents(input_str):
     # Normalize the input string to NFD form (decomposed)
-    nfkd_form = unicodedata.normalize('NFD', input_str)
-    # Filter out characters that are combining accents (category 'Mn' stands for Non-spacing Mark)
-    return ''.join([c for c in nfkd_form if unicodedata.category(c) != 'Mn'])
+    nfkd_form = unicodedata.normalize("NFD", input_str)
+
+    # Filter out characters that are combining accents
+    # (category 'Mn' stands for Non-spacing Mark)
+    return "".join([c for c in nfkd_form if unicodedata.category(c) != "Mn"])
 
 
 if __name__ == "__main__":
