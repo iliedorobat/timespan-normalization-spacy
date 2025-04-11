@@ -28,8 +28,7 @@ class TemporalNormalization:
         start_process(doc, expressions, "normalizer/process/")
         str_matches: list[str] = _prepare_str_patterns(expressions)
 
-        new_ents = _find_dates(doc, str_matches, expressions)
-        doc.set_ents(list(doc.ents) + new_ents)
+        _retokenize(doc, str_matches, expressions)
 
         return doc
 
@@ -44,34 +43,32 @@ def _prepare_str_patterns(expressions: list[TemporalExpression]) -> list[str]:
     return matches
 
 
-def _find_dates(doc: Doc, str_matches: list[str], expressions: list[TemporalExpression]) -> list[Span]:
+def _retokenize(doc: Doc, str_matches: list[str], expressions: list[TemporalExpression]) -> None:
     regex_matches: list[str] = [fr"{item}" for item in str_matches]
     pattern = f"({'|'.join(regex_matches)})"
     matches = list(re.finditer(pattern, remove_accents(doc.text), re.IGNORECASE)) if len(regex_matches) > 0 else []
-    new_ents = []
 
-    for match in matches:
-        start_char, end_char = match.start(), match.end()
-        start_token, end_token = None, None
+    with doc.retokenize() as retokenizer:
+        for match in matches:
+            start_char, end_char = match.start(), match.end()
+            start_token, end_token = None, None
 
-        for token in doc:
-            if token.idx == start_char:
-                start_token = token.i
-            if token.idx + len(token.text) == end_char:
-                end_token = token.i
+            for token in doc:
+                if token.idx == start_char:
+                    start_token = token.i
+                if token.idx + len(token.text) == end_char:
+                    end_token = token.i
 
-        if start_token is not None and end_token is not None:
-            entity = Span(doc, start_token, end_token + 1, label="DATE")
-            expression = next((item for item in expressions if remove_accents(entity.text) in item.matches), None)
+            if start_token is not None and end_token is not None:
+                entity = Span(doc, start_token, end_token + 1, label="DATETIME")
+                expression = next((item for item in expressions if remove_accents(entity.text) in item.matches), None)
 
-            if expression:
-                entity._.set("normalized", expression)
+                if expression:
+                    entity._.set("normalized", expression)
 
-            new_ents.append(entity)
-        else:
-            print(f"Warning: Could not find tokens for match '{match.group()}' at {start_char}-{end_char}")
-
-    return new_ents
+                retokenizer.merge(entity)
+            else:
+                print(f"Warning: Could not find tokens for match '{match.group()}' at {start_char}-{end_char}")
 
 
 def remove_accents(input_str):
