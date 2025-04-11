@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="temporal_normalization_spacy",
-    version="1.0.0",
+    version="1.0.1",
     author="Ilie Cristian Dorobat",
     description="A spaCy plugin for identifying and parsing historical data in Romanian texts",
     long_description=open("README.md").read(),

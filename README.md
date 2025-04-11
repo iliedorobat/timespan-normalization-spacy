@@ -56,17 +56,9 @@ To integrate TeNs into spaCy pipelines you need the following:
 - py4j 0.10.9.9
 - langdetect 1.0.9
 
-1. Install python packages:
-```bash
-    pip install -r requirements.txt
-```
-
-2. Install [JDK 11](https://www.oracle.com/nl/java/technologies/javase/jdk11-archive-downloads.html) or [OpenJDK 11](https://openjdk.org/install/) (or newer versions)
-
-
 ### Install
 ```bash
-    pip install temporal-spacy
+    pip install temporal-normalization-spacy
 ```
 
 ### Supported languages
@@ -96,7 +88,7 @@ TEXT_RO = ("Sec al II-lea a.ch. a fost o perioadă de mari schimbări. "
 
 ### Adding the Component to spaCy Pipeline
 ```python
-    # Display a warning if the language of the text is not Romanian.
+# Display a warning if the language of the text is not Romanian.
 console.lang_warning(TEXT_RO, target_lang=LANG)
 
 try:
