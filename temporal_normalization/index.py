@@ -1,3 +1,4 @@
+import os
 import re
 import unicodedata
 
@@ -24,8 +25,13 @@ class TemporalNormalization:
         self.nlp = nlp
 
     def __call__(self, doc: Doc) -> Doc:
+        jar_path = os.path.join(
+            os.path.dirname(__file__),
+            'libs/temporal-normalization-1.6.jar'
+        )
+
         expressions: list[TemporalExpression] = []
-        start_process(doc, expressions, "normalizer/process/")
+        start_process(doc, expressions, jar_path)
         str_matches: list[str] = _prepare_str_patterns(expressions)
 
         _retokenize(doc, str_matches, expressions)
