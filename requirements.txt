@@ -1,0 +1,8 @@
+setuptools==76.0.0
+wheel==0.45.1
+spacy==3.8.5
+py4j==0.10.9.9
+numpy==1.26.4
+stanza==1.6.1
+spacy-stanza==1.0.4
+langdetect==1.0.9
