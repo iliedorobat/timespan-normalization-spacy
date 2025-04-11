@@ -84,8 +84,8 @@ import subprocess
 
 import spacy
 
-from temporal_normalizer.commons.print_utils import console
-from temporal_normalizer.index import create_normalized_component, TemporalNormalization  ## noqa: F401
+from temporal_normalization.commons.print_utils import console
+from temporal_normalization.index import create_normalized_component, TemporalNormalization  ## noqa: F401
 
 LANG = "ro"
 MODEL = "ro_core_news_sm"
@@ -109,8 +109,8 @@ except OSError:
     # Load the spaCy model
     nlp = spacy.load(MODEL)
 
-# Add "temporal_normalizer" component to the spaCy pipeline
-nlp.add_pipe("temporal_normalizer", last=True)
+# Add "temporal_normalization" component to the spaCy pipeline
+nlp.add_pipe("temporal_normalization", last=True)
 ```
 
 ### Processing Text with the Pipeline
