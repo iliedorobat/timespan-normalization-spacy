@@ -4,7 +4,7 @@ from py4j.java_gateway import JavaGateway
 from py4j.protocol import Py4JNetworkError
 from spacy.tokens import Doc
 
-from normalizer.commons.temporal_models import TemporalExpression
+from temporal_normalizer.commons.temporal_models import TemporalExpression
 
 
 def start_process(doc: Doc, expressions: list[TemporalExpression], sub_path: str = ""):

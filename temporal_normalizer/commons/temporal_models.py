@@ -1,7 +1,7 @@
 import json
 from py4j.java_gateway import JavaObject
 
-from normalizer.commons.temporal_types import TemporalType
+from temporal_normalizer.commons.temporal_types import TemporalType
 
 
 class TemporalExpression:

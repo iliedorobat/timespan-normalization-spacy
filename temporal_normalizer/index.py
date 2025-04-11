@@ -4,11 +4,11 @@ import unicodedata
 from spacy import Language
 from spacy.tokens import Doc, Span
 
-from normalizer.commons.temporal_models import TemporalExpression
-from normalizer.process.java_process import start_process
+from temporal_normalizer.commons.temporal_models import TemporalExpression
+from temporal_normalizer.process.java_process import start_process
 
 try:
-    @Language.factory("temporal_normalization")
+    @Language.factory("temporal_normalizer")
     def create_normalized_component(nlp, name):
         return TemporalNormalization(nlp, name)
 except AttributeError:
