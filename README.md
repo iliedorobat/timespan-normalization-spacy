@@ -54,13 +54,11 @@ To integrate TeNs into spaCy pipelines you need the following:
 - JRE 11+
 - spaCy 3.x
 - py4j 0.10.9.9
-- numpy 1.26.4
-- spacy-stanza 1.0.4
 - langdetect 1.0.9
 
 1. Install python packages:
 ```bash
-    pip3 install -r requirements.txt
+    pip install -r requirements.txt
 ```
 
 2. Install [JDK 11](https://www.oracle.com/nl/java/technologies/javase/jdk11-archive-downloads.html) or [OpenJDK 11](https://openjdk.org/install/) (or newer versions)
@@ -68,7 +66,7 @@ To integrate TeNs into spaCy pipelines you need the following:
 
 ### Install
 ```bash
-    pip3 install temporal-spacy
+    pip install temporal-spacy
 ```
 
 ### Supported languages
@@ -77,16 +75,20 @@ To integrate TeNs into spaCy pipelines you need the following:
 
 
 ## Usage
+*** 
 
 ### Importing Modules & Defining Constants
-```python
-import spacy_stanza
-import stanza
 
-from normalizer.commons.print_utils import console
-from normalizer.index import create_normalized_component, TemporalNormalization  ## noqa: F401
+```python
+import subprocess
+
+import spacy
+
+from temporal_normalization.commons.print_utils import console
+from temporal_normalization.index import create_normalized_component, TemporalNormalization  ## noqa: F401
 
 LANG = "ro"
+MODEL = "ro_core_news_sm"
 TEXT_RO = ("Sec al II-lea a.ch. a fost o perioadă de mari schimbări. "
            "În secolul XX, tehnologia a avansat semnificativ. "
            "Sec. 21 este adesea asociat cu globalizarea rapidă.")
@@ -94,18 +96,18 @@ TEXT_RO = ("Sec al II-lea a.ch. a fost o perioadă de mari schimbări. "
 
 ### Adding the Component to spaCy Pipeline
 ```python
-# Display a warning if the language of the text is not Romanian.
+    # Display a warning if the language of the text is not Romanian.
 console.lang_warning(TEXT_RO, target_lang=LANG)
 
 try:
-    # Load the Romanian pre-trained Stanza pipeline into the spaCy framework if already exists
-    nlp = spacy_stanza.load_pipeline(LANG, download_method=None)
-except FileNotFoundError:
-    console.warning(f'Started downloading the model for "{LANG}" language...')
-    # Download the Romanian pre-trained Stanza pipeline only if it doesn't exist
-    stanza.download(LANG)
-    # Load the Romanian pre-trained Stanza pipeline into the spaCy framework
-    nlp = spacy_stanza.load_pipeline(LANG)
+    # Load the spaCy model if it has already been downloaded
+    nlp = spacy.load(MODEL)
+except OSError:
+    console.warning(f'Started downloading {MODEL}...')
+    # Download the Romanian model if it wasn't already downloaded
+    subprocess.run(["python", "-m", "spacy", "download", MODEL])
+    # Load the spaCy model
+    nlp = spacy.load(MODEL)
 
 # Add "temporal_normalization" component to the spaCy pipeline
 nlp.add_pipe("temporal_normalization", last=True)
@@ -124,15 +126,14 @@ print()
 ```python
 # Display information about the identified and normalized dates in the text.
 for entity in doc.ents:
-    if entity._.normalized:
-        for edge in entity._.normalized.edges:
-            print(edge.serialize())
-            print()
+    for edge in entity._.normalized.edges:
+        print(edge.serialize())
+        print()
 
-        print("Periods:")
-        for period in entity._.normalized.periods:
-            print(period.serialize("\t"))
-            print()
+    print("Periods:")
+    for period in entity._.normalized.periods:
+        print(period.serialize("\t"))
+        print()
 ```
 
 ### Result

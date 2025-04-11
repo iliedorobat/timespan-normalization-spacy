@@ -1,10 +1,12 @@
-import spacy_stanza
-import stanza
+import subprocess
 
-from normalizer.commons.print_utils import console
-from normalizer.index import create_normalized_component, TemporalNormalization  ## noqa: F401
+import spacy
+
+from temporal_normalization.commons.print_utils import console
+from temporal_normalization.index import create_normalized_component, TemporalNormalization  ## noqa: F401
 
 LANG = "ro"
+MODEL = "ro_core_news_sm"
 TEXT_RO = ("Sec al II-lea a.ch. a fost o perioadă de mari schimbări. "
            "În secolul XX, tehnologia a avansat semnificativ. "
            "Sec. 21 este adesea asociat cu globalizarea rapidă.")
@@ -14,14 +16,14 @@ if __name__ == "__main__":
     console.lang_warning(TEXT_RO, target_lang=LANG)
 
     try:
-        # Load the Romanian pre-trained Stanza pipeline into the spaCy framework if already exists
-        nlp = spacy_stanza.load_pipeline(LANG, download_method=None)
-    except FileNotFoundError:
-        console.warning(f'Started downloading the model for "{LANG}" language...')
-        # Download the Romanian pre-trained Stanza pipeline only if it doesn't exist
-        stanza.download(LANG)
-        # Load the Romanian pre-trained Stanza pipeline into the spaCy framework
-        nlp = spacy_stanza.load_pipeline(LANG)
+        # Load the spaCy model if it has already been downloaded
+        nlp = spacy.load(MODEL)
+    except OSError:
+        console.warning(f'Started downloading {MODEL}...')
+        # Download the Romanian model if it wasn't already downloaded
+        subprocess.run(["python", "-m", "spacy", "download", MODEL])
+        # Load the spaCy model
+        nlp = spacy.load(MODEL)
 
     # Add "temporal_normalization" component to the spaCy pipeline
     nlp.add_pipe("temporal_normalization", last=True)
@@ -33,12 +35,11 @@ if __name__ == "__main__":
 
     # Display information about the identified and normalized dates in the text.
     for entity in doc.ents:
-        if entity._.normalized:
-            for edge in entity._.normalized.edges:
-                print(edge.serialize())
-                print()
+        for edge in entity._.normalized.edges:
+            print(edge.serialize())
+            print()
 
-            print("Periods:")
-            for period in entity._.normalized.periods:
-                print(period.serialize("\t"))
-                print()
+        print("Periods:")
+        for period in entity._.normalized.periods:
+            print(period.serialize("\t"))
+            print()
