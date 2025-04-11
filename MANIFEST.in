@@ -1,0 +1,6 @@
+include README.md
+include temporal_normalization/libs/temporal-normalization-1.6.jar
+
+recursive-include temporal_normalizer/commons *
+recursive-include temporal_normalizer/libs *
+recursive-include temporal_normalizer *

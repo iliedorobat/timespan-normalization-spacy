@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 
 setup(
-    name="temporal_normalization",
+    name="temporal_normalization_spacy",
     version="1.0.0",
     author="Ilie Cristian Dorobat",
     description="A spaCy plugin for identifying and parsing historical data in Romanian texts",
@@ -9,6 +9,10 @@ setup(
     long_description_content_type="text/markdown",
     url="https://github.com/iliedorobat/timespan-normalization-spacy",
     packages=find_packages(),
+    include_package_data=True,
+    package_data={
+        "temporal_normalization.libs": ["temporal-normalization-1.6.jar"],
+    },
     install_requires=[
         "spacy>=3.0",
         "py4j",
