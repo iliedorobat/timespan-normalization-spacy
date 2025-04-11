@@ -58,7 +58,7 @@ To integrate TeNs into spaCy pipelines you need the following:
 
 ### Install
 ```bash
-    pip install temporal-normalization-spacy
+pip install temporal-normalization-spacy
 ```
 
 ### Supported languages
@@ -77,7 +77,7 @@ import subprocess
 import spacy
 
 from temporal_normalization.commons.print_utils import console
-from temporal_normalization.index import create_normalized_component, TemporalNormalization  ## noqa: F401
+from temporal_normalization.index import create_normalized_component, TemporalNormalization  # noqa: F401
 
 LANG = "ro"
 MODEL = "ro_core_news_sm"
