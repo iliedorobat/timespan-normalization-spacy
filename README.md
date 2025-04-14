@@ -1,7 +1,7 @@
 # Temporal Expressions Normalization spaCy (TeNs)
 
 <b>Temporal Expressions Normalization spaCy (TeNs)</b> is a powerful pipeline component for spaCy that seamlessly
-identifies and parses date entities in text. It leverages the <b>[Temporal Normalization Framework](
+identifies and parses date entities in text. It leverages the <b>[Temporal Expressions Normalization Framework](
 https://github.com/iliedorobat/timespan-normalization)</b> to recognize a wide variety of date formats using an
 extensive set of regular expressions (RegEx), ensuring robust and adaptable date extraction across diverse
 textual sources.
