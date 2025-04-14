@@ -161,6 +161,7 @@ start_process(TEXT_RO, expressions)
 
 ### Accessing the Parsed Temporal Expressions
 ```python
+# Display information about the identified and normalized dates in the text.
 for expression in expressions:
     for time_series in expression.time_series:
         edges = time_series.edges
