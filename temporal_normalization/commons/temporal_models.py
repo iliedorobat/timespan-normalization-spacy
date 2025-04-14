@@ -1,4 +1,5 @@
 import json
+
 from py4j.java_gateway import JavaObject
 
 from temporal_normalization.commons.temporal_types import TemporalType
@@ -12,10 +13,8 @@ class TemporalExpression:
     Attributes:
         is_valid (bool): A flag that specifies whether the text processed
             through timespan-normalization library is a temporal expression.
-        initial (str or None): The original temporal expression before processing.
-        edges (list[EdgeModel]): A list of temporal intervals represented as edges.
-        periods (list[DBpediaModel]): A list of normalized DBpedia entities
-            extracted from the expression.
+        input_value (str or None): The original temporal expression before processing.
+        time_series (list[TimeSeries]): The list of normalized temporal expressions.
         matches (list[str]): A unique list of matched values found in the normalized
             entities.
     """
@@ -25,31 +24,60 @@ class TemporalExpression:
         json_obj = json.loads(serialize)
 
         self.is_valid = TemporalExpression.is_valid_json(json_obj)
-        self.initial: str | None = json_obj["initial"] if self.is_valid else None
-        self.edges: list[EdgeModel] = (
-            [EdgeModel(item) for item in json_obj["edges"]] if self.is_valid else []
+        self.input_value: str | None = json_obj["inputValue"] if self.is_valid else None
+        self.time_series: list[TimeSeries] = [
+            TimeSeries(item) for item in json_obj["timeSeries"]
+        ] if self.is_valid else []
+        self.matches: list[str] = list(
+            set([matched_value for ts in self.time_series for matched_value in ts.matches])
         )
+
+    def __str__(self):
+        if self.input_value is None:
+            return "TemporalExpression(None)"
+
+        return f"TemporalExpression({self.input_value})"
+
+    def __repr__(self):
+        return self.input_value
+
+    @staticmethod
+    def is_valid_json(json_obj) -> bool:
+        return "inputValue" in json_obj and "timeSeries" in json_obj
+
+
+class TimeSeries:
+    """
+    A data structure representing a temporal expression that has been normalized
+    into a list of periods and temporal edges.
+
+    Attributes:
+        edges (list[EdgeModel]): A list of temporal intervals represented as edges.
+        periods (list[DBpediaModel]): A list of normalized DBpedia entities
+            extracted from the expression.
+        matches (list[str]): A unique list of matched values found in the normalized
+            entities.
+    """
+
+    def __init__(self, data: dict):
+        self.edges: EdgeModel = EdgeModel(data["edges"]) if "edges" in data else None
         self.periods: list[DBpediaModel] = (
-            [DBpediaModel(item) for item in json_obj["periods"]]
-            if self.is_valid
+            [DBpediaModel(item) for item in data["periods"]]
+            if "periods" in data
             else []
         )
         self.matches: list[str] = list(
             set([item.matched_value for item in self.periods])
         )
 
-    def __str__(self):
-        if self.initial is None:
-            return "TemporalExpression(None)"
-
-        return f"TemporalExpression({self.initial})"
-
     def __repr__(self):
-        return self.initial
+        return f"TimeSeries(edges={self.edges}, periods={self.periods})"
 
-    @staticmethod
-    def is_valid_json(json_obj) -> bool:
-        return "initial" in json_obj and "edges" in json_obj and "periods" in json_obj
+    def serialize(self, indent: str = ""):
+        return (
+            f"{indent}Edges: {self.edges}\n"
+            f"{indent}Periods: {self.periods}"
+        )
 
 
 class DBpediaModel:

@@ -1,10 +1,10 @@
-import os
 import re
-import unicodedata
 
 from spacy import Language
 from spacy.tokens import Doc, Span
+from spacy.util import filter_spans
 
+from temporal_normalization import TimeSeries
 from temporal_normalization.commons.temporal_models import TemporalExpression
 from temporal_normalization.process.java_process import start_process
 
@@ -20,19 +20,15 @@ except AttributeError:
 
 
 class TemporalNormalization:
-    __FIELD = "normalized"
+    __FIELD = "time_series"
 
     def __init__(self, nlp: Language, name: str):
-        Span.set_extension("normalized", default=None, force=True)
+        Span.set_extension(TemporalNormalization.__FIELD, default=None, force=True)
         self.nlp = nlp
 
     def __call__(self, doc: Doc) -> Doc:
-        jar_path = os.path.join(
-            os.path.dirname(__file__), "libs/temporal-normalization-1.6.jar"
-        )
-
         expressions: list[TemporalExpression] = []
-        start_process(doc, expressions, jar_path)
+        start_process(doc.text, expressions)
         str_matches: list[str] = _prepare_str_patterns(expressions)
 
         _retokenize(doc, str_matches, expressions)
@@ -56,7 +52,7 @@ def _retokenize(
     regex_matches: list[str] = [rf"{item}" for item in str_matches]
     pattern = f"({'|'.join(regex_matches)})"
     matches = (
-        list(re.finditer(pattern, remove_accents(doc.text), re.IGNORECASE))
+        list(re.finditer(pattern, doc.text, re.IGNORECASE))
         if len(regex_matches) > 0
         else []
     )
@@ -74,17 +70,14 @@ def _retokenize(
 
             if start_token is not None and end_token is not None:
                 entity = Span(doc, start_token, end_token + 1, label="DATETIME")
-                expression = next(
-                    (
-                        item
-                        for item in expressions
-                        if remove_accents(entity.text) in item.matches
-                    ),
-                    None,
-                )
+                time_series: list[TimeSeries] = [ts for expression in expressions for ts in expression.time_series]
+                expression: TimeSeries | None = next((ts for ts in time_series if entity.text in ts.matches), None)
 
                 if expression:
-                    entity._.set("normalized", expression)
+                    entity._.set("time_series", expression)
+                    # E.g.: "În secolul XX, tehnologia a avansat semnificativ."
+                    all_ents = list(doc.ents) + [entity]
+                    doc.ents = filter_spans(all_ents)
 
                 retokenizer.merge(entity)
             else:
@@ -92,15 +85,6 @@ def _retokenize(
                     f"Warning: Could not find tokens for match '{match.group()}' "
                     f"at {start_char}-{end_char}"
                 )
-
-
-def remove_accents(input_str):
-    # Normalize the input string to NFD form (decomposed)
-    nfkd_form = unicodedata.normalize("NFD", input_str)
-
-    # Filter out characters that are combining accents
-    # (category 'Mn' stands for Non-spacing Mark)
-    return "".join([c for c in nfkd_form if unicodedata.category(c) != "Mn"])
 
 
 if __name__ == "__main__":
