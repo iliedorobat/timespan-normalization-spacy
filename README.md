@@ -66,8 +66,7 @@ pip install temporal-normalization-spacy
 
 
 
-## Usage
-*** 
+## Use with spaCy library
 
 ### Importing Modules & Defining Constants
 
@@ -118,25 +117,79 @@ print()
 ```python
 # Display information about the identified and normalized dates in the text.
 for entity in doc.ents:
-    for edge in entity._.normalized.edges:
-        print(edge.serialize())
-        print()
+    edges = entity._.time_series.edges
+
+    print("Start Edge:")
+    print(edges.start.serialize("\t"))
+    print()
+
+    print("End Edge:")
+    print(edges.end.serialize("\t"))
+    print()
 
     print("Periods:")
-    for period in entity._.normalized.periods:
+    for period in entity._.time_series.periods:
         print(period.serialize("\t"))
         print()
+    print("---------------------")
 ```
 
-### Result
-#### First Sentence
+## Standalone usage
+** **Important Note:** Even if you choose the standalone approach, the **spaCy library will 
+still be loaded on first run,** and this process may take a few seconds/tens of seconds.
+
+### Importing Modules & Defining Constants
+```python
+from temporal_normalization import console, TemporalExpression, start_process
+
+LANG = "ro"
+TEXT_RO = (
+    "Sec al II-lea a.ch. a fost o perioadă de mari schimbări. "
+    "În secolul XX, tehnologia a avansat semnificativ. "
+    "Sec. 21 este adesea asociat cu globalizarea rapidă."
+)
+```
+
+### Parsing the Content
+```python
+# Display a warning if the language of the text is not Romanian.
+console.lang_warning(TEXT_RO, target_lang=LANG)
+
+expressions: list[TemporalExpression] = []
+start_process(TEXT_RO, expressions)
+```
+
+### Accessing the Parsed Temporal Expressions
+```python
+for expression in expressions:
+    for time_series in expression.time_series:
+        edges = time_series.edges
+
+        print("Start Edge:")
+        print(edges.start.serialize("\t"))
+        print()
+
+        print("End Edge:")
+        print(edges.end.serialize("\t"))
+        print()
+
+        print("Periods:")
+        for period in time_series.periods:
+            print(period.serialize("\t"))
+            print()
+        print("---------------------")
+```
+
+## Result
+### First Sentence
 ```text
-Start time:
+Start Edge:
 	Matched value: Sec al II-lea a.ch.
 	Matched Type: century
 	Normalized label: 2nd century BC
 	DBpedia uri: https://dbpedia.org/page/2nd_century_BC
-End time:
+
+End Edge:
 	Matched value: Sec al II-lea a.ch.
 	Matched Type: century
 	Normalized label: 2nd century BC
@@ -154,14 +207,15 @@ Periods:
 	DBpedia uri: https://dbpedia.org/page/2nd_century_BC
 ```
 
-#### Second Sentence
+### Second Sentence
 ```text
-Start time:
+Start Edge:
 	Matched value: secolul XX
 	Matched Type: century
 	Normalized label: 20th century
 	DBpedia uri: https://dbpedia.org/page/20th_century
-End time:
+
+End Edge:
 	Matched value: secolul XX
 	Matched Type: century
 	Normalized label: 20th century
@@ -179,14 +233,15 @@ Periods:
 	DBpedia uri: https://dbpedia.org/page/20th_century
 ```
 
-#### Third Sentence
+### Third Sentence
 ```text
-Start time:
+Start Edge:
 	Matched value: Sec. 21
 	Matched Type: century
 	Normalized label: 21st century
 	DBpedia uri: https://dbpedia.org/page/21st_century
-End time:
+
+End Edge:
 	Matched value: Sec. 21
 	Matched Type: century
 	Normalized label: 21st century

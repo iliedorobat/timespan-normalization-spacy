@@ -14,4 +14,20 @@ if __name__ == "__main__":
     expressions: list[TemporalExpression] = []
     start_process(TEXT_RO, expressions)
 
-    print(expressions)
+    for expression in expressions:
+        for time_series in expression.time_series:
+            edges = time_series.edges
+
+            print("Start Edge:")
+            print(edges.start.serialize("\t"))
+            print()
+
+            print("End Edge:")
+            print(edges.end.serialize("\t"))
+            print()
+
+            print("Periods:")
+            for period in time_series.periods:
+                print(period.serialize("\t"))
+                print()
+            print("---------------------")

@@ -40,11 +40,18 @@ if __name__ == "__main__":
 
     # Display information about the identified and normalized dates in the text.
     for entity in doc.ents:
-        for edge in entity._.normalized.edges:
-            print(edge.serialize())
-            print()
+        edges = entity._.time_series.edges
+
+        print("Start Edge:")
+        print(edges.start.serialize("\t"))
+        print()
+
+        print("End Edge:")
+        print(edges.end.serialize("\t"))
+        print()
 
         print("Periods:")
-        for period in entity._.normalized.periods:
+        for period in entity._.time_series.periods:
             print(period.serialize("\t"))
             print()
+        print("---------------------")
