@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="temporal_normalization_spacy",
-    version="1.1.1",
+    version="2.0.0.post1",
     author="Ilie Cristian Dorobat",
     description="A spaCy plugin for identifying and parsing historical data "
                 "in Romanian texts",
@@ -12,7 +12,7 @@ setup(
     packages=find_packages(),
     include_package_data=True,
     package_data={
-        "temporal_normalization.libs": ["temporal-normalization-1.7.jar"],
+        "temporal_normalization.libs": ["temporal-normalization-2.0.jar"],
     },
     install_requires=["spacy>=3.0", "py4j", "langdetect"],
     classifiers=[

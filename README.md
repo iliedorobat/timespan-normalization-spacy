@@ -117,21 +117,25 @@ print()
 ```python
 # Display information about the identified and normalized dates in the text.
 for entity in doc.ents:
-    edges = entity._.time_series.edges
+    time_series = entity._.time_series
 
-    print("Start Edge:")
-    print(edges.start.serialize("\t"))
-    print()
+    if isinstance(time_series, list):
+        for ts in time_series:
+            edges = ts.edges
 
-    print("End Edge:")
-    print(edges.end.serialize("\t"))
-    print()
+            print("Start Edge:")
+            print(edges.start.serialize("\t"))
+            print()
 
-    print("Periods:")
-    for period in entity._.time_series.periods:
-        print(period.serialize("\t"))
-        print()
-    print("---------------------")
+            print("End Edge:")
+            print(edges.end.serialize("\t"))
+            print()
+
+            print("Periods:")
+            for period in ts.periods:
+                print(period.serialize("\t"))
+                print()
+            print("---------------------")
 ```
 
 ## Standalone usage
