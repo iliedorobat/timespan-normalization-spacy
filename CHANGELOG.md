@@ -3,6 +3,10 @@ All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 ---
 
+### 2.0.1
+#### Changed
+- Updated the text of `Ronec` entities by adding space between the corresponding tokens
+
 ### 2.0.0.post2
 #### Added
 - icon.png.

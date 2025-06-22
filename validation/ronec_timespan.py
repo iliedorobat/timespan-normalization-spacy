@@ -14,7 +14,10 @@ class Ronec:
         tags = [label_names[tag] for tag in sent["ner_tags"]]
         tokens = sent["tokens"]
 
-        self.text = EMPTY_SPACE.join(tokens)
+        self.text = "".join(
+            token + (EMPTY_SPACE if space else "")
+            for token, space in zip(sent["tokens"], sent["space_after"])
+        )
         self.timespans = _get_timespans(tokens, tags)
         self.sent = sent
         self.dataset_type = dataset_type
