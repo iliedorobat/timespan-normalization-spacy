@@ -75,11 +75,16 @@ class OutputFile:
     @staticmethod
     def write_entities_entries(
         dataset_type: str, ronec_entry: Ronec, ronec_timespan: Timespan, doc: Doc
-    ):
+    ) -> int:
+        counter = 0
+
         for entity in doc.ents:
             OutputFile.write_entity_entries(
                 dataset_type, ronec_entry, ronec_timespan, entity
             )
+            counter += 1
+
+        return counter
 
     @staticmethod
     def write_entity_entries(
@@ -119,7 +124,7 @@ class OutputFile:
 
     @staticmethod
     def write_empty_entry(
-        dataset_type: str, ronec_entry: Ronec, ronec_timespan: Timespan, entity_text: str
+        dataset_type: str, ronec_entry: Ronec, ronec_timespan: Timespan | None, entity_text: str | None
     ) -> None:
         with open(
             OutputFile.get_output_path(dataset_type), "a", encoding="utf-8"
@@ -128,9 +133,9 @@ class OutputFile:
                 [
                     str(ronec_entry.sent["id"]),
                     ronec_entry.text,
-                    ronec_timespan.text,
-                    ronec_timespan.tag_type.value,
-                    entity_text,
+                    ronec_timespan.text if ronec_timespan is not None else "",
+                    ronec_timespan.tag_type.value if ronec_timespan is not None else "",
+                    entity_text if entity_text is not None else "",
                     "",
                     "",
                     "",
