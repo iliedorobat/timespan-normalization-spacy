@@ -1,3 +1,5 @@
+from functools import total_ordering
+
 from datasets import load_dataset
 
 from mock.mock_data import ronec_example
@@ -43,8 +45,8 @@ def validate_dataset(dataset_type: str, mock_data: bool = False):
     ronec = ronec_example if mock_data else load_dataset("ronec")
     OutputFile.write_header(dataset_type)
     dataset = ronec[dataset_type]
-    counter = 0
-    counter_timespan = 0
+    total_rows = 0
+    total_timespans = 0
 
     print(f"{dataset_type}: no. of entries = {len(dataset)}")
 
@@ -53,15 +55,19 @@ def validate_dataset(dataset_type: str, mock_data: bool = False):
 
         if ronec_entry.timespans:
             print(f"i = {i}")
-            counter += 1
+            total_rows += 1
+            local_counter = 0
 
             for timespan in ronec_entry.timespans:
                 doc = nlp(timespan.text)
-                OutputFile.write_entities_entries(dataset_type, ronec_entry, timespan, doc)
-                counter_timespan += 1
+                local_counter += OutputFile.write_entities_entries(dataset_type, ronec_entry, timespan, doc)
+                total_timespans += 1
 
-    print(f"{dataset_type}: no. of date and periods entries = {counter}")
-    print(f"{dataset_type}: TOTAL no. of date and periods = {counter_timespan}")
+            if local_counter == 0:
+                OutputFile.write_empty_entry(dataset_type, ronec_entry, None, None)
+
+    print(f"{dataset_type}: no. of date and periods entries = {total_rows}")
+    print(f"{dataset_type}: TOTAL no. of date and periods = {total_timespans}")
 
 
 if __name__ == "__main__":
