@@ -10,11 +10,13 @@ MODEL = "ro_core_news_sm"
 
 def validate_dataset(dataset_type: str, mock_data: bool = False):
     """
-    Runs a validation loop over a specified dataset (e.g., ``validation``, ``test``, or ``train``),
-    applying a spaCy model to all temporal expressions and writing the results to file.
+    Runs a validation loop over a specified dataset (e.g., ``validation``, ``test``,
+    or ``train``), applying a spaCy model to all temporal expressions and writing the
+    results to file.
 
-    The function loads RONEC entries, extracts their associated timespans (temporal expressions),
-    processes each using the NLP model, and writes the annotated output using ``OutputFile``.
+    The function loads RONEC entries, extracts their associated timespans (temporal
+    expressions), processes each using the NLP model, and writes the annotated output
+    using ``OutputFile``.
 
     Args:
         dataset_type (str): The name of the dataset split to validate. Expected values:
@@ -57,7 +59,9 @@ def validate_dataset(dataset_type: str, mock_data: bool = False):
 
             for timespan in ronec_entry.timespans:
                 doc = nlp(timespan.text)
-                OutputFile.write_entities_entries(dataset_type, ronec_entry, timespan, doc)
+                OutputFile.write_entities_entries(
+                    dataset_type, ronec_entry, timespan, doc
+                )
                 total_timespans += 1
 
     print(f"{dataset_type}: no. of date and periods entries = {total_rows}")

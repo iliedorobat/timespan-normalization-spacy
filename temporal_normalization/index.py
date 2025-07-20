@@ -146,12 +146,12 @@ def _retokenize(
 
 
 def _retokenize_entity(
-        doc: Doc,
-        matched_ts: list[TimeSeries],
-        entity: Span,
-        existed_entity: bool,
-        retokenized_entities: list[Span],
-        retokenizer: Doc.retokenize,
+    doc: Doc,
+    matched_ts: list[TimeSeries],
+    entity: Span,
+    existed_entity: bool,
+    retokenized_entities: list[Span],
+    retokenizer: Doc.retokenize,
 ) -> None:
     """
     Retokenizes and enriches a temporal entity span with matched time series data.
@@ -174,7 +174,9 @@ def _retokenize_entity(
     _merge_entity(doc, entity, retokenized_entities, retokenizer)
 
 
-def _assign_time_series(matched_ts: list[TimeSeries], entity: Span, existed_entity: bool) -> None:
+def _assign_time_series(
+    matched_ts: list[TimeSeries], entity: Span, existed_entity: bool
+) -> None:
     """
     Attaches matched TimeSeries to a given entity.
 
@@ -209,10 +211,10 @@ def _update_doc_ents(doc: Doc, entity: Span) -> None:
 
 
 def _merge_entity(
-        doc: Doc,
-        entity: Span,
-        retokenized_entities: list[Span],
-        retokenizer: Doc.retokenize,
+    doc: Doc,
+    entity: Span,
+    retokenized_entities: list[Span],
+    retokenizer: Doc.retokenize,
 ) -> None:
     """
     Merges a custom entity span into the spaCy Doc if it is not already part of
@@ -270,7 +272,9 @@ def _is_substring(text: str, matches: list[str]) -> bool:
     return False
 
 
-def _create_span(doc: Doc, start_char: int, end_char: int, start_token: int, end_token: int) -> tuple[Span, bool]:
+def _create_span(
+    doc: Doc, start_char: int, end_char: int, start_token: int, end_token: int
+) -> tuple[Span, bool]:
     """
     Creates a new span for a temporal expression or returns an existing overlapping entity.
 

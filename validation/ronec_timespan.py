@@ -85,7 +85,9 @@ class OutputFile:
             counter += 1
 
         if counter == 0:
-            OutputFile.write_empty_entry(dataset_type, ronec_entry, ronec_timespan, None)
+            OutputFile.write_empty_entry(
+                dataset_type, ronec_entry, ronec_timespan, None
+            )
 
     @staticmethod
     def write_entity_entries(
@@ -100,9 +102,13 @@ class OutputFile:
                         dataset_type, ronec_entry, ronec_timespan, entity.text, ts
                     )
                 else:
-                    OutputFile.write_empty_entry(dataset_type, ronec_entry, ronec_timespan, entity.text)
+                    OutputFile.write_empty_entry(
+                        dataset_type, ronec_entry, ronec_timespan, entity.text
+                    )
         else:
-            OutputFile.write_empty_entry(dataset_type, ronec_entry, ronec_timespan, entity.text)
+            OutputFile.write_empty_entry(
+                dataset_type, ronec_entry, ronec_timespan, entity.text
+            )
 
     @staticmethod
     def write_header(dataset_type: str) -> None:
@@ -125,7 +131,10 @@ class OutputFile:
 
     @staticmethod
     def write_empty_entry(
-        dataset_type: str, ronec_entry: Ronec, ronec_timespan: Timespan | None, entity_text: str | None
+        dataset_type: str,
+        ronec_entry: Ronec,
+        ronec_timespan: Timespan | None,
+        entity_text: str | None,
     ) -> None:
         with open(
             OutputFile.get_output_path(dataset_type), "a", encoding="utf-8"

@@ -29,7 +29,13 @@ class TemporalExpression:
             TimeSeries(item) for item in json_obj["timeSeries"]
         ] if self.is_valid else []
         self.matches: list[str] = list(
-            set([matched_value for ts in self.time_series for matched_value in ts.matches])
+            set(
+                [
+                    matched_value
+                    for ts in self.time_series
+                    for matched_value in ts.matches
+                ]
+            )
         )
 
     def __str__(self):

@@ -5,7 +5,7 @@ setup(
     version="2.0.1",
     author="Ilie Cristian Dorobat",
     description="A spaCy plugin for identifying and parsing historical data "
-                "in Romanian texts",
+    "in Romanian texts",
     long_description=open("README.md").read(),
     long_description_content_type="text/markdown",
     url="https://github.com/iliedorobat/timespan-normalization-spacy",
