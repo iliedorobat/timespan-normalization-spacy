@@ -129,10 +129,10 @@ def _retokenize(
             if start_token is not None and end_token is not None:
                 # use exact token boundaries to create a custom `Span` for well-defined
                 # time expressions with known character offsets.
-                entity, exists = _create_span(doc, start_char, end_char, start_token, end_token)
+                entity, existed_entity = _create_span(doc, start_char, end_char, start_token, end_token)
                 time_series: list[TimeSeries] = [ts for expression in expressions for ts in expression.time_series]
                 matched_ts = [ts for ts in time_series if _matched(entity.text, ts.matches)]
-                _assign_time_series(matched_ts, retokenized_entities, retokenizer, doc, entity, exists)
+                _retokenize_entity(doc, matched_ts, entity, existed_entity, retokenized_entities, retokenizer)
             else:
                 # For more ambiguous or loosely defined expressions, such as "martie -iunie 2013"
                 # or "dintre secolele al XV-lea și al XVIII-lea", iterates through existing entities
@@ -142,24 +142,26 @@ def _retokenize(
                     if entity not in retokenized_entities:
                         time_series: list[TimeSeries] = [ts for expression in expressions for ts in expression.time_series]
                         matched_ts = [ts for ts in time_series if _is_substring(entity.text, ts.matches)]
-                        _assign_time_series(matched_ts, retokenized_entities, retokenizer, doc, entity, True)
+                        _retokenize_entity(doc, matched_ts, entity, True, retokenized_entities, retokenizer)
 
 
-def _assign_time_series(
-    matched_ts: list[TimeSeries],
-    retokenized_entities: list[Span],
-    retokenizer: Doc.retokenize,
-    doc: Doc,
-    entity: Span,
-    exists: bool
+def _retokenize_entity(
+        doc: Doc,
+        matched_ts: list[TimeSeries],
+        entity: Span,
+        existed_entity: bool,
+        retokenized_entities: list[Span],
+        retokenizer: Doc.retokenize,
 ) -> None:
     """
-    Attaches matched TimeSeries to a given entity and updates the doc's entity list.
+    Retokenizes and enriches a temporal entity span with matched time series data.
+    Updates the Doc with the new entity and merges it if needed.
 
     Args:
         doc (Doc): The processed spaCy document.
+        matched_ts (list[TimeSeries]): The matched time series.
         entity (Span): The named entity to enrich.
-        exists (bool): Whether the entity already exists in doc.ents.
+        existed_entity (bool): Whether the entity already exists in doc.ents.
         retokenized_entities (list): Accumulator for entities that require retokenization.
         retokenizer (Doc.retokenize): The spaCy retokenizer context.
     """
@@ -167,10 +169,35 @@ def _assign_time_series(
     if not len(matched_ts):
         return None
 
-    if exists:
+    _assign_time_series(matched_ts, entity, existed_entity)
+    _update_doc_ents(doc, entity)
+    _merge_entity(doc, entity, retokenized_entities, retokenizer)
+
+
+def _assign_time_series(matched_ts: list[TimeSeries], entity: Span, existed_entity: bool) -> None:
+    """
+    Attaches matched TimeSeries to a given entity.
+
+    Args:
+        matched_ts (list[TimeSeries]): The matched time series.
+        entity (Span): The named entity to enrich.
+        existed_entity (bool): Whether the entity already exists in doc.ents.
+    """
+
+    if existed_entity:
         entity._.time_series = matched_ts
     else:
         entity._.set("time_series", matched_ts)
+
+
+def _update_doc_ents(doc: Doc, entity: Span) -> None:
+    """
+    Updates the doc's entity list
+
+    Args:
+        doc (Doc): The processed spaCy document.
+        entity (Span): The named entity to enrich.
+    """
 
     all_ents = list(doc.ents)
     if entity not in all_ents:
@@ -180,7 +207,24 @@ def _assign_time_series(
 
     doc.ents = filter_spans(all_ents)
 
-    if entity not in all_ents:
+
+def _merge_entity(
+        doc: Doc,
+        entity: Span,
+        retokenized_entities: list[Span],
+        retokenizer: Doc.retokenize,
+) -> None:
+    """
+    Merges a custom entity span into the spaCy Doc if it is not already part of
+    doc.ents, and tracks it in a list of retokenized entities.
+
+    Args:
+        entity (Span): The named entity to enrich.
+        retokenized_entities (list): Accumulator for entities that require retokenization.
+        retokenizer (Doc.retokenize): The spaCy retokenizer context.
+    """
+
+    if entity not in doc.ents:
         retokenized_entities.append(entity)
         retokenizer.merge(entity)
 
