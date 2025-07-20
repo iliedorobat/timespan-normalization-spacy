@@ -75,7 +75,7 @@ class OutputFile:
     @staticmethod
     def write_entities_entries(
         dataset_type: str, ronec_entry: Ronec, ronec_timespan: Timespan, doc: Doc
-    ) -> int:
+    ):
         counter = 0
 
         for entity in doc.ents:
@@ -84,7 +84,8 @@ class OutputFile:
             )
             counter += 1
 
-        return counter
+        if counter == 0:
+            OutputFile.write_empty_entry(dataset_type, ronec_entry, ronec_timespan, None)
 
     @staticmethod
     def write_entity_entries(

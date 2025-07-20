@@ -1,5 +1,3 @@
-from functools import total_ordering
-
 from datasets import load_dataset
 
 from mock.mock_data import ronec_example
@@ -56,15 +54,11 @@ def validate_dataset(dataset_type: str, mock_data: bool = False):
         if ronec_entry.timespans:
             print(f"i = {i}")
             total_rows += 1
-            local_counter = 0
 
             for timespan in ronec_entry.timespans:
                 doc = nlp(timespan.text)
-                local_counter += OutputFile.write_entities_entries(dataset_type, ronec_entry, timespan, doc)
+                OutputFile.write_entities_entries(dataset_type, ronec_entry, timespan, doc)
                 total_timespans += 1
-
-            if local_counter == 0:
-                OutputFile.write_empty_entry(dataset_type, ronec_entry, None, None)
 
     print(f"{dataset_type}: no. of date and periods entries = {total_rows}")
     print(f"{dataset_type}: TOTAL no. of date and periods = {total_timespans}")
