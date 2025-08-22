@@ -110,6 +110,8 @@ def _retokenize(
     )
 
     with doc.retokenize() as retokenizer:
+        retokenized_entities: list[Span] = []
+
         for match in matches:
             if not isinstance(match, re.Match):
                 print(f"Invalid match object: {match!r}")
@@ -125,31 +127,108 @@ def _retokenize(
                     end_token = token.i
 
             if start_token is not None and end_token is not None:
-                entity, exists = _create_span(doc, start_char, end_char, start_token, end_token)
+                # use exact token boundaries to create a custom `Span` for well-defined
+                # time expressions with known character offsets.
+                entity, existed_entity = _create_span(doc, start_char, end_char, start_token, end_token)
                 time_series: list[TimeSeries] = [ts for expression in expressions for ts in expression.time_series]
                 matched_ts = [ts for ts in time_series if _matched(entity.text, ts.matches)]
-
-                if len(matched_ts) > 0:
-                    if exists:
-                        entity._.time_series = matched_ts
-                    else:
-                        entity._.set("time_series", matched_ts)
-
-                    all_ents = list(doc.ents)
-                    if entity not in all_ents:
-                        # E.g.: entity in all_ents => "Ecaterina Balș ( 22 iulie 1814 - august 1887 ) - născută în familia Dimachi , a doua soție a generalului Teodor Balș ( 1805-1857 ) , caimacam al Moldovei în perioada 1856-1857 , cu care se căsătorise la 30 iunie 1846 la Dimăcheni ( Dorohoi ) ."
-                        # E.g.: entity not in all_ents => "În secolul XX, tehnologia a avansat semnificativ."
-                        all_ents.append(entity)
-
-                    doc.ents = filter_spans(all_ents)
-
-                    if entity not in all_ents:
-                        retokenizer.merge(entity)
+                _retokenize_entity(doc, matched_ts, entity, existed_entity, retokenized_entities, retokenizer)
             else:
-                print(
-                    f"Warning: Could not find tokens for match '{match.group()}' "
-                    f"at {start_char}-{end_char}"
-                )
+                # For more ambiguous or loosely defined expressions, such as "martie -iunie 2013"
+                # or "dintre secolele al XV-lea și al XVIII-lea", iterates through existing entities
+                # and looks for substring matches to associate any relevant entries in `TimeSeries`
+                # with the entity.
+                for entity in doc.ents:
+                    if entity not in retokenized_entities:
+                        time_series: list[TimeSeries] = [ts for expression in expressions for ts in expression.time_series]
+                        matched_ts = [ts for ts in time_series if _is_substring(entity.text, ts.matches)]
+                        _retokenize_entity(doc, matched_ts, entity, True, retokenized_entities, retokenizer)
+
+
+def _retokenize_entity(
+    doc: Doc,
+    matched_ts: list[TimeSeries],
+    entity: Span,
+    existed_entity: bool,
+    retokenized_entities: list[Span],
+    retokenizer: Doc.retokenize,
+) -> None:
+    """
+    Retokenizes and enriches a temporal entity span with matched time series data.
+    Updates the Doc with the new entity and merges it if needed.
+
+    Args:
+        doc (Doc): The processed spaCy document.
+        matched_ts (list[TimeSeries]): The matched time series.
+        entity (Span): The named entity to enrich.
+        existed_entity (bool): Whether the entity already exists in doc.ents.
+        retokenized_entities (list): Accumulator for entities that require retokenization.
+        retokenizer (Doc.retokenize): The spaCy retokenizer context.
+    """
+
+    if not len(matched_ts):
+        return None
+
+    _assign_time_series(matched_ts, entity, existed_entity)
+    _update_doc_ents(doc, entity)
+    _merge_entity(doc, entity, retokenized_entities, retokenizer)
+
+
+def _assign_time_series(
+    matched_ts: list[TimeSeries], entity: Span, existed_entity: bool
+) -> None:
+    """
+    Attaches matched TimeSeries to a given entity.
+
+    Args:
+        matched_ts (list[TimeSeries]): The matched time series.
+        entity (Span): The named entity to enrich.
+        existed_entity (bool): Whether the entity already exists in doc.ents.
+    """
+
+    if existed_entity:
+        entity._.time_series = matched_ts
+    else:
+        entity._.set("time_series", matched_ts)
+
+
+def _update_doc_ents(doc: Doc, entity: Span) -> None:
+    """
+    Updates the doc's entity list
+
+    Args:
+        doc (Doc): The processed spaCy document.
+        entity (Span): The named entity to enrich.
+    """
+
+    all_ents = list(doc.ents)
+    if entity not in all_ents:
+        # E.g.: entity in all_ents => "Ecaterina Balș ( 22 iulie 1814 - august 1887 ) - născută în familia Dimachi , a doua soție a generalului Teodor Balș ( 1805-1857 ) , caimacam al Moldovei în perioada 1856-1857 , cu care se căsătorise la 30 iunie 1846 la Dimăcheni ( Dorohoi ) ."
+        # E.g.: entity not in all_ents => "În secolul XX, tehnologia a avansat semnificativ."
+        all_ents.append(entity)
+
+    doc.ents = filter_spans(all_ents)
+
+
+def _merge_entity(
+    doc: Doc,
+    entity: Span,
+    retokenized_entities: list[Span],
+    retokenizer: Doc.retokenize,
+) -> None:
+    """
+    Merges a custom entity span into the spaCy Doc if it is not already part of
+    doc.ents, and tracks it in a list of retokenized entities.
+
+    Args:
+        entity (Span): The named entity to enrich.
+        retokenized_entities (list): Accumulator for entities that require retokenization.
+        retokenizer (Doc.retokenize): The spaCy retokenizer context.
+    """
+
+    if entity not in doc.ents:
+        retokenized_entities.append(entity)
+        retokenizer.merge(entity)
 
 
 def _matched(text: str, matches: list[str]) -> bool:
@@ -171,7 +250,31 @@ def _matched(text: str, matches: list[str]) -> bool:
     return False
 
 
-def _create_span(doc: Doc, start_char: int, end_char: int, start_token: int, end_token: int) -> tuple[Span, bool]:
+def _is_substring(text: str, matches: list[str]) -> bool:
+    """
+    Checks whether the given text is a substring of any string in the matches list.
+
+    Unlike `_matched`, which checks if a match is in the text, this function checks
+    if the text appears entirely within any of the provided match strings.
+
+    Args:
+        text (str): The span text to search for.
+        matches (list[str]): A list of raw string patterns in which to search.
+
+    Returns:
+        bool: True if `text` is found inside any string from `matches`, False otherwise.
+    """
+
+    for match in matches:
+        if text in match:
+            return True
+
+    return False
+
+
+def _create_span(
+    doc: Doc, start_char: int, end_char: int, start_token: int, end_token: int
+) -> tuple[Span, bool]:
     """
     Creates a new span for a temporal expression or returns an existing overlapping entity.
 

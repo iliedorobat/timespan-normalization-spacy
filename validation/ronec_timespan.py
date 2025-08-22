@@ -14,7 +14,10 @@ class Ronec:
         tags = [label_names[tag] for tag in sent["ner_tags"]]
         tokens = sent["tokens"]
 
-        self.text = EMPTY_SPACE.join(tokens)
+        self.text = "".join(
+            token + (EMPTY_SPACE if space else "")
+            for token, space in zip(sent["tokens"], sent["space_after"])
+        )
         self.timespans = _get_timespans(tokens, tags)
         self.sent = sent
         self.dataset_type = dataset_type
@@ -73,9 +76,17 @@ class OutputFile:
     def write_entities_entries(
         dataset_type: str, ronec_entry: Ronec, ronec_timespan: Timespan, doc: Doc
     ):
+        counter = 0
+
         for entity in doc.ents:
             OutputFile.write_entity_entries(
                 dataset_type, ronec_entry, ronec_timespan, entity
+            )
+            counter += 1
+
+        if counter == 0:
+            OutputFile.write_empty_entry(
+                dataset_type, ronec_entry, ronec_timespan, None
             )
 
     @staticmethod
@@ -91,9 +102,13 @@ class OutputFile:
                         dataset_type, ronec_entry, ronec_timespan, entity.text, ts
                     )
                 else:
-                    OutputFile.write_empty_entry(dataset_type, ronec_entry, entity.text)
+                    OutputFile.write_empty_entry(
+                        dataset_type, ronec_entry, ronec_timespan, entity.text
+                    )
         else:
-            OutputFile.write_empty_entry(dataset_type, ronec_entry, entity.text)
+            OutputFile.write_empty_entry(
+                dataset_type, ronec_entry, ronec_timespan, entity.text
+            )
 
     @staticmethod
     def write_header(dataset_type: str) -> None:
@@ -116,7 +131,10 @@ class OutputFile:
 
     @staticmethod
     def write_empty_entry(
-        dataset_type: str, ronec_entry: Ronec, entity_text: str
+        dataset_type: str,
+        ronec_entry: Ronec,
+        ronec_timespan: Timespan | None,
+        entity_text: str | None,
     ) -> None:
         with open(
             OutputFile.get_output_path(dataset_type), "a", encoding="utf-8"
@@ -125,9 +143,9 @@ class OutputFile:
                 [
                     str(ronec_entry.sent["id"]),
                     ronec_entry.text,
-                    "",
-                    "",
-                    entity_text,
+                    ronec_timespan.text if ronec_timespan is not None else "",
+                    ronec_timespan.tag_type.value if ronec_timespan is not None else "",
+                    entity_text if entity_text is not None else "",
                     "",
                     "",
                     "",

@@ -58,20 +58,21 @@ class RonecRoot:
         return f"<RonecRoot {self._data}>"
 
 
+# fmt: off
 # test => i = 21
 example_1 = {
     "id": 4023,
     "tokens": [
-        "După", "finalizarea", "lucrărilor", "la", "linia", "101", ",", "a", "fost", "construit", "și", "Depoul", "de", "Tramvaie", "de", "la", "capătul", "străzii", "Industriei", ",", "cu", "halele", "de", "reparații", "și", "întreținere", ".", "Între", "2004", "și", "2008", ",", "tramvaiele", "sunt", "desființate", "din", "motive", "ideologice", ":", "în", "măsura", "în", "care", "primăria", "condusă", "de", "Radu", "Mazăre", "considera", "că", "transportul", "urban", "pe", "șine", "este", "arhaic", "și", "că", "modernismul", "înseamnă", "să", "se", "dea", "prioritate", "traficului", "de", "automobile", "private", "(", "o", "ideologie", "a", "transportului", "care", "a", "dominat", "Statele-Unite", "și", "Europa", "occidentală", "în", "deceniile", "1950-1970", ")", "tramvaiele", "au", "fost", "socotite", "ca", "o", "cauză", "de", "congestionare", "a", "traficului", "și", "desființate", "conform", "programului", "denumit", "„", "de", "reabilitare", "a", "transportului", "public", "”", ".",
+        "După", "finalizarea", "lucrărilor", "la", "linia", "101", ",", "a", "fost", "construit", "și", "Depoul", "de", "Tramvaie", "de", "la", "capătul", "străzii", "Industriei", ",", "cu", "halele", "de", "reparații", "și", "întreținere", ".", "Între", "2004", "și", "2008", ",", "tramvaiele", "sunt", "desființate", "din", "motive", "ideologice", ":", "în", "măsura", "în", "care", "primăria", "condusă", "de", "Radu", "Mazăre", "considera", "că", "transportul", "urban", "pe", "șine", "este", "arhaic", "și", "că", "modernismul", "înseamnă", "să", "se", "dea", "prioritate", "traficului", "de", "automobile", "private", "(", "o", "ideologie", "a", "transportului", "care", "a", "dominat", "Statele-Unite", "și", "Europa", "occidentală", "în", "deceniile", "1950-1970", ")", "tramvaiele", "au", "fost", "socotite", "ca", "o", "cauză", "de", "congestionare", "a", "traficului", "și", "desființate", "conform", "programului", "denumit", "„", "de", "reabilitare", "a", "transportului", "public", "”", ".",  # noqa: E501
     ],
     "ner_ids": [
-        0, 0, 0, 0, 0, 25, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 8, 0, 0, 0, 0, 0, 0, 0, 0, 19, 20, 20, 20, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 7, 8, 0, 19, 20, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 25, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 8, 0, 0, 0, 0, 0, 0, 0, 0, 19, 20, 20, 20, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 7, 8, 0, 19, 20, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,  # noqa: E501
     ],
     "space_after": [
-        True, True, True, True, True, False, True, True, True, True, True, True, True, True, True, True, True, True, False, True, True, True, True, True, True, False, False, True, True, True, False, True, True, True, True, True, True, False, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, False, True, True, True, True, True, True, True, True, True, True, True, True, True, False, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, False, True, True, True, True, False, False, False,
+        True, True, True, True, True, False, True, True, True, True, True, True, True, True, True, True, True, True, False, True, True, True, True, True, True, False, False, True, True, True, False, True, True, True, True, True, True, False, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, False, True, True, True, True, True, True, True, True, True, True, True, True, True, False, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, False, True, True, True, True, False, False, False,  # noqa: E501
     ],
     "ner_tags": [
-        0, 0, 0, 0, 0, 25, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 8, 0, 0, 0, 0, 0, 0, 0, 0, 19, 20, 20, 20, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 7, 8, 0, 19, 20, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 25, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 8, 0, 0, 0, 0, 0, 0, 0, 0, 19, 20, 20, 20, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 7, 8, 0, 19, 20, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,  # noqa: E501
     ],
 }
 
@@ -79,16 +80,16 @@ example_1 = {
 example_2 = {
     "id": 11606,
     "ner_ids": [
-        0, 0, 0, 1, 2, 0, 1, 0, 0, 0, 0, 0, 0, 0, 7, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 0, 0, 0, 5, 0, 0,
+        0, 0, 0, 1, 2, 0, 1, 0, 0, 0, 0, 0, 0, 0, 7, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 0, 0, 0, 5, 0, 0,  # noqa: E501
     ],
     "ner_tags": [
-        0, 0, 0, 1, 2, 0, 1, 0, 0, 0, 0, 0, 0, 0, 7, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 0, 0, 0, 5, 0, 0,
+        0, 0, 0, 1, 2, 0, 1, 0, 0, 0, 0, 0, 0, 0, 7, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 0, 0, 0, 5, 0, 0,  # noqa: E501
     ],
     "space_after": [
-        True, True, True, True, False, True, False, True, True, True, True, False, True, True, False, True, True, True, True, True, True, True, True, True, True, True, False, True, False, True, True, True, False, False, False,
+        True, True, True, True, False, True, False, True, True, True, True, False, True, True, False, True, True, True, True, True, True, True, True, True, True, True, False, True, False, True, True, True, False, False, False,  # noqa: E501
     ],
     "tokens": [
-        "Cu", "ajutorul", "unei", "motocicliste", "curiere", ",", "Mari", ",", "pe", "care", "au", "întâlnit", "-o", "în", "Odaiba", ",", "Mirai", "și", "Yuuki", "se", "luptă", "să", "ajungă", "înapoi", "la", "casa", "lor", ",", "Setagaya", ",", "din", "vestul", "Tokyo", "-ului", ".",
+        "Cu", "ajutorul", "unei", "motocicliste", "curiere", ",", "Mari", ",", "pe", "care", "au", "întâlnit", "-o", "în", "Odaiba", ",", "Mirai", "și", "Yuuki", "se", "luptă", "să", "ajungă", "înapoi", "la", "casa", "lor", ",", "Setagaya", ",", "din", "vestul", "Tokyo", "-ului", ".",  # noqa: E501
     ],
 }
 
@@ -138,6 +139,7 @@ ronec_example = RonecRoot(
     },
     [example_1, example_2],
 )
+# fmt: on
 
 if __name__ == "__main__":
     test = ronec_example["validation"].features["ner_tags"].feature.names

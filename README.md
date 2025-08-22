@@ -1,4 +1,4 @@
-# Temporal Expressions Normalization spaCy (TeNs)
+# Temporal Expressions Normalization for spaCy (TeNs)
 
 <b>Temporal Expressions Normalization spaCy (TeNs)</b> is a powerful pipeline component for spaCy that seamlessly
 identifies and parses date entities in text. It leverages the <b>[Temporal Expressions Normalization Framework](
