@@ -1,14 +1,15 @@
 from datasets import load_dataset
 
+from inp_timespan import InpInputFile, InpOutputFile
 from mock.mock_data import ronec_example
 from model import load_model
-from ronec_timespan import Ronec, OutputFile
+from ronec_timespan import Ronec, RonecOutputFile
 
 LANG = "ro"
 MODEL = "ro_core_news_sm"
 
 
-def validate_dataset(dataset_type: str, mock_data: bool = False):
+def validate_ronec_corpus(dataset_type: str, mock_data: bool = False):
     """
     Runs a validation loop over a specified dataset (e.g., ``validation``, ``test``,
     or ``train``), applying a spaCy model to all temporal expressions and writing the
@@ -25,9 +26,9 @@ def validate_dataset(dataset_type: str, mock_data: bool = False):
                           Defaults to False.
 
     Example:
-        >>> validate_dataset("validation")
-        >>> validate_dataset("test")
-        >>> validate_dataset("train", mock_data=True)
+        >>> validate_ronec_corpus("validation")
+        >>> validate_ronec_corpus("test")
+        >>> validate_ronec_corpus("train", mock_data=True)
 
     Prints:
         - Number of total entries in the dataset.
@@ -43,7 +44,7 @@ def validate_dataset(dataset_type: str, mock_data: bool = False):
     nlp = load_model(MODEL)
 
     ronec = ronec_example if mock_data else load_dataset("ronec")
-    OutputFile.write_header(dataset_type)
+    RonecOutputFile.write_header(dataset_type)
     dataset = ronec[dataset_type]
     total_rows = 0
     total_timespans = 0
@@ -59,13 +60,29 @@ def validate_dataset(dataset_type: str, mock_data: bool = False):
 
             for timespan in ronec_entry.timespans:
                 doc = nlp(timespan.text)
-                OutputFile.write_entities_entries(
+                RonecOutputFile.write_entities_entries(
                     dataset_type, ronec_entry, timespan, doc
                 )
                 total_timespans += 1
 
     print(f"{dataset_type}: no. of date and periods entries = {total_rows}")
     print(f"{dataset_type}: TOTAL no. of date and periods = {total_timespans}")
+
+
+def validate_inp_data(dataset_type: str):
+    nlp = load_model(MODEL)
+    InpOutputFile.write_header(dataset_type)
+    raw_timespans = InpInputFile.read_file(dataset_type)
+
+    for raw_timespan in raw_timespans:
+        doc = nlp(raw_timespan)
+
+        for entity in doc.ents:
+            if isinstance(entity._.time_series, list):
+                for entry in entity._.time_series:
+                    InpOutputFile.write_timespan_entry(dataset_type, entry)
+            else:
+                InpOutputFile.write_empty_entry(dataset_type, entity.text)
 
 
 if __name__ == "__main__":

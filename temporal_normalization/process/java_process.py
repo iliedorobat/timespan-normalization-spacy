@@ -31,14 +31,14 @@ def start_process(text: str, expressions: list[TemporalExpression]):
         >>> # ... use the list of normalized temporal expressions.
 
     Note:
-        Requires `temporal-normalization-2.0.jar` to be present in the `libs` directory.
+        Requires `temporal-normalization-2.1.jar` to be present in the `libs` directory.
         Also requires Java 11 or higher to be installed and accessible in the system PATH.
     """
 
     check_java_version()
 
     jar_path = os.path.join(
-        os.path.dirname(__file__), "../libs/temporal-normalization-2.0.jar"
+        os.path.dirname(__file__), "../libs/temporal-normalization-2.1.jar"
     )
 
     java_process = subprocess.Popen(

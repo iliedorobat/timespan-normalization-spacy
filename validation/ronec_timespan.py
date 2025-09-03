@@ -35,13 +35,13 @@ class RonecTagType(Enum):
         return value in cls._value2member_map_
 
 
-class Timespan:
+class RonecTimespan:
     def __init__(self, start: int, end: int, text: str, tag: str):
         self.start = start
         self.end = end
         self.text = text
         self.tag = tag
-        self.tag_type = Timespan.get_tag_type(tag)
+        self.tag_type = RonecTimespan.get_tag_type(tag)
 
     def __repr__(self):
         return f'Timespan(tag={self.tag}, text="{self.text}")'
@@ -50,7 +50,7 @@ class Timespan:
         self.end = end
         self.text += EMPTY_SPACE + text
 
-        tag_type = Timespan.get_tag_type(tag)
+        tag_type = RonecTimespan.get_tag_type(tag)
         if self.tag_type != tag_type:
             console.warning(f"tag_type={self.tag_type} but received {tag_type}.")
 
@@ -67,54 +67,57 @@ class Timespan:
         return RonecTagType._value2member_map_.get(tag_type)
 
 
-class OutputFile:
+class RonecOutputFile:
     @staticmethod
     def get_output_path(dataset_type: str) -> str:
-        return f"validation/output_{dataset_type}.csv"
+        return f"validation/files/output/{dataset_type}.csv"
 
     @staticmethod
     def write_entities_entries(
-        dataset_type: str, ronec_entry: Ronec, ronec_timespan: Timespan, doc: Doc
+        dataset_type: str, ronec_entry: Ronec, ronec_timespan: RonecTimespan, doc: Doc
     ):
         counter = 0
 
         for entity in doc.ents:
-            OutputFile.write_entity_entries(
+            RonecOutputFile.write_entity_entries(
                 dataset_type, ronec_entry, ronec_timespan, entity
             )
             counter += 1
 
         if counter == 0:
-            OutputFile.write_empty_entry(
+            RonecOutputFile.write_empty_entry(
                 dataset_type, ronec_entry, ronec_timespan, None
             )
 
     @staticmethod
     def write_entity_entries(
-        dataset_type: str, ronec_entry: Ronec, ronec_timespan: Timespan, entity: Span
+        dataset_type: str,
+        ronec_entry: Ronec,
+        ronec_timespan: RonecTimespan,
+        entity: Span,
     ) -> None:
         time_series = entity._.time_series
 
         if isinstance(time_series, list):
             for ts in time_series:
                 if isinstance(ts, TimeSeries):
-                    OutputFile.write_timespan_entry(
+                    RonecOutputFile.write_timespan_entry(
                         dataset_type, ronec_entry, ronec_timespan, entity.text, ts
                     )
                 else:
-                    OutputFile.write_empty_entry(
+                    RonecOutputFile.write_empty_entry(
                         dataset_type, ronec_entry, ronec_timespan, entity.text
                     )
         else:
-            OutputFile.write_empty_entry(
+            RonecOutputFile.write_empty_entry(
                 dataset_type, ronec_entry, ronec_timespan, entity.text
             )
 
     @staticmethod
     def write_header(dataset_type: str) -> None:
         with open(
-            OutputFile.get_output_path(dataset_type), "w", encoding="utf-8"
-        ) as csvfile:
+            RonecOutputFile.get_output_path(dataset_type), "w", encoding="utf-8"
+        ) as csv_file:
             entry = "|".join(
                 [
                     "id",
@@ -127,18 +130,18 @@ class OutputFile:
                     "end",
                 ]
             )
-            csvfile.write(entry + "\n")
+            csv_file.write(entry + "\n")
 
     @staticmethod
     def write_empty_entry(
         dataset_type: str,
         ronec_entry: Ronec,
-        ronec_timespan: Timespan | None,
+        ronec_timespan: RonecTimespan | None,
         entity_text: str | None,
     ) -> None:
         with open(
-            OutputFile.get_output_path(dataset_type), "a", encoding="utf-8"
-        ) as csvfile:
+            RonecOutputFile.get_output_path(dataset_type), "a", encoding="utf-8"
+        ) as csv_file:
             entry = "|".join(
                 [
                     str(ronec_entry.sent["id"]),
@@ -151,19 +154,19 @@ class OutputFile:
                     "",
                 ]
             )
-            csvfile.write(entry + "\n")
+            csv_file.write(entry + "\n")
 
     @staticmethod
     def write_timespan_entry(
         dataset_type: str,
         ronec_entry: Ronec,
-        ronec_timespan: Timespan,
+        ronec_timespan: RonecTimespan,
         entity_text: str,
         time_series: TimeSeries,
     ) -> None:
         with open(
-            OutputFile.get_output_path(dataset_type), "a", encoding="utf-8"
-        ) as csvfile:
+            RonecOutputFile.get_output_path(dataset_type), "a", encoding="utf-8"
+        ) as csv_file:
             entry = "|".join(
                 [
                     str(ronec_entry.sent["id"]),
@@ -176,24 +179,24 @@ class OutputFile:
                     time_series.edges.end.label,
                 ]
             )
-            csvfile.write(entry + "\n")
+            csv_file.write(entry + "\n")
 
 
-def _get_timespans(tokens: list[str], tags: list[str]) -> list[Timespan]:
+def _get_timespans(tokens: list[str], tags: list[str]) -> list[RonecTimespan]:
     timespans = []
     timespan = None
 
     for i, tag in enumerate(tags):
         if tag == "B-PERIOD" or tag == "B-DATETIME":
-            if isinstance(timespan, Timespan):
+            if isinstance(timespan, RonecTimespan):
                 timespans.append(timespan)
 
-            timespan = Timespan(i, i, tokens[i], tag)
+            timespan = RonecTimespan(i, i, tokens[i], tag)
         elif tag == "I-PERIOD" or tag == "I-DATETIME":
-            if isinstance(timespan, Timespan):
+            if isinstance(timespan, RonecTimespan):
                 timespan.append_text(i, tokens[i], tag)
     else:
-        if isinstance(timespan, Timespan):
+        if isinstance(timespan, RonecTimespan):
             timespans.append(timespan)
 
     return timespans

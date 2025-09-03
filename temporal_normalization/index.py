@@ -9,9 +9,11 @@ from temporal_normalization.commons.temporal_models import TemporalExpression
 from temporal_normalization.process.java_process import start_process
 
 try:
+
     @Language.factory("temporal_normalization")
     def create_normalized_component(nlp, name):
         return TemporalNormalization(nlp, name)
+
 except AttributeError:
     # spaCy 2.x
     pass
@@ -101,7 +103,8 @@ def _retokenize(
                                                 each with time series metadata.
     """
 
-    regex_matches: list[str] = [rf"{item}" for item in str_matches]
+    # TODO: WIP: revalidate "validation" & "test" datasets
+    regex_matches: list[str] = [rf"{re.escape(item)}" for item in str_matches]
     pattern = f"({'|'.join(regex_matches)})"
     matches = (
         list(re.finditer(pattern, doc.text, re.IGNORECASE))
@@ -126,6 +129,7 @@ def _retokenize(
                 if token.idx + len(token.text) == end_char:
                     end_token = token.i
 
+            # fmt: off
             if start_token is not None and end_token is not None:
                 # use exact token boundaries to create a custom `Span` for well-defined
                 # time expressions with known character offsets.
@@ -143,6 +147,8 @@ def _retokenize(
                         time_series: list[TimeSeries] = [ts for expression in expressions for ts in expression.time_series]
                         matched_ts = [ts for ts in time_series if _is_substring(entity.text, ts.matches)]
                         _retokenize_entity(doc, matched_ts, entity, True, retokenized_entities, retokenizer)
+
+            # fmt: on
 
 
 def _retokenize_entity(

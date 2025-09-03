@@ -3,6 +3,10 @@ All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 ---
 
+### 2.1.0
+#### Changed
+- Bump TeN Framework 2.1
+
 ### 2.0.2
 #### Changed
 - Improved the log of temporal expressions that are not processed by the TeN Framework.
