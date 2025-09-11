@@ -143,8 +143,17 @@ for entity in doc.ents:
 still be loaded on first run,** and this process may take a few seconds/tens of seconds.
 
 ### Importing Modules & Defining Constants
+
 ```python
-from temporal_normalization import console, TemporalExpression, start_process
+from pathlib import Path
+
+from temporal_normalization import (
+    close_conn,
+    console,
+    extract_temporal_expressions,
+    start_conn,
+    TemporalExpression,
+)
 
 LANG = "ro"
 TEXT_RO = (
@@ -159,8 +168,10 @@ TEXT_RO = (
 # Display a warning if the language of the text is not Romanian.
 console.lang_warning(TEXT_RO, target_lang=LANG)
 
-expressions: list[TemporalExpression] = []
-start_process(TEXT_RO, expressions)
+root_path = str(Path(__file__).resolve().parent.parent.parent)
+java_process, gateway = start_conn(root_path)
+expressions: list[TemporalExpression] = extract_temporal_expressions(gateway, TEXT_RO)
+close_conn(java_process, gateway)
 ```
 
 ### Accessing the Parsed Temporal Expressions

@@ -3,6 +3,16 @@ All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 ---
 
+### 2.1.0
+#### Changed
+- Bump TeN Framework 2.1.0
+- Escaped special characters when building `regex_matches` in `_retokenize` method
+- Improved performance by initializing the Java process at the start of the pipeline and shutting it down only when the pipeline is destroyed.
+
+#### Added
+- `input_value` and `prepared_value` fields to `TimeSeries` class
+- INP validation tests (`validate_inp_data`)
+
 ### 2.0.2
 #### Changed
 - Improved the log of temporal expressions that are not processed by the TeN Framework.
