@@ -6,7 +6,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### 2.1.0
 #### Changed
 - Bump TeN Framework 2.1.0
-- Escape special characters when building `regex_matches` in `_retokenize` method
+- Escaped special characters when building `regex_matches` in `_retokenize` method
+- Improved performance by initializing the Java process at the start of the pipeline and shutting it down only when the pipeline is destroyed.
 
 #### Added
 - `input_value` and `prepared_value` fields to `TimeSeries` class

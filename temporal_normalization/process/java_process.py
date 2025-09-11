@@ -1,4 +1,3 @@
-import os
 import re
 import shutil
 import subprocess
@@ -7,38 +6,31 @@ from py4j.java_gateway import JavaGateway
 from py4j.protocol import Py4JNetworkError
 
 from temporal_normalization.commons.print_utils import console
-from temporal_normalization.commons.temporal_models import TemporalExpression
 
 
-def start_process(text: str, expressions: list[TemporalExpression]):
+def start_conn(root_path: str) -> tuple[subprocess.Popen, JavaGateway]:
     """
-    Launches the Java-based temporal normalization process and populates a list
-    of temporal expressions extracted from the input text.
-
-    This function starts a Java subprocess that hosts the temporal-normalization
-    server via Py4J. Once the gateway is connected, it sends the input text for
-    processing, retrieves the temporal expressions, and then shuts down both
-    the Python and Java sides of the connection.
+    Starts the Java temporal normalization process and establishes a Py4J gateway connection.
 
     Args:
-        text (str): The input text to be analyzed for temporal expressions.
-        expressions (list[TemporalExpression]): A list to be populated with
-            extracted temporal expressions.
+        root_path (str): The root directory of the project.
 
-    Example:
-        >>> expressions: list[TemporalExpression] = []
-        >>> start_process("Sec al II-lea a.ch. a fost o perioadă de mari schimbări.", expressions)
-        >>> # ... use the list of normalized temporal expressions.
+    Returns:
+        tuple[subprocess.Popen, JavaGateway]:
+            - The subprocess.Popen object representing the running Java process.
+            - The JavaGateway object representing the active Py4J connection.
 
     Note:
-        Requires `temporal-normalization-2.1.0.jar` to be present in the `libs` directory.
-        Also requires Java 11 or higher to be installed and accessible in the system PATH.
+        - Requires Java 11 or higher to be installed and accessible in the system PATH.
+        - Requires `temporal-normalization-2.1.0.jar` to be present in the `libs` directory.
+        - The caller is responsible for closing the gateway and terminating the Java process
+            after usage to avoid orphaned processes.
     """
 
     check_java_version()
 
-    jar_path = os.path.join(
-        os.path.dirname(__file__), "../libs/temporal-normalization-2.1.0.jar"
+    jar_path = (
+        f"{root_path}/temporal_normalization/libs/temporal-normalization-2.1.0.jar"
     )
 
     java_process = subprocess.Popen(
@@ -49,11 +41,34 @@ def start_process(text: str, expressions: list[TemporalExpression]):
     )
 
     for line in java_process.stdout:
-        if "Gateway Server Started..." in line:
+        if "Gateway Server Started." in line:
             print(line.strip())
             break
 
-    gateway = gateway_conn(text, expressions)
+    gateway = JavaGateway()
+    print("Python connection established.")
+
+    return java_process, gateway
+
+
+def close_conn(java_process: subprocess.Popen, gateway: JavaGateway) -> None:
+    """
+    Closes the active connection between Python and the Java process started via Py4J.
+
+    This function ensures a proper shutdown sequence:
+    1. Attempts to gracefully shut down the Py4J gateway connection.
+       - If the Java process is already closed, a Py4JNetworkError is caught and logged.
+    2. Terminates the underlying Java process.
+    3. Prints status messages for debugging/confirmation.
+
+    Args:
+        java_process (subprocess.Popen): The Java process launched with subprocess.
+        gateway (JavaGateway): The active Py4J gateway connection.
+
+    Notes:
+        - Call this function once you have finished all interactions with the Java process.
+        - It is safe to call even if the Java process has already exited.
+    """
 
     try:
         # Proper way to shut down Py4J
@@ -67,46 +82,7 @@ def start_process(text: str, expressions: list[TemporalExpression]):
     print("Java server is shutting down...")
 
 
-def gateway_conn(text: str, expressions: list[TemporalExpression]) -> JavaGateway:
-    """
-    Establishes a connection to the Java Py4J gateway and initializes the
-    temporal expression extraction.
-
-    It creates an instance of the Java class ``TimeExpression``, wraps it in
-    a Python ``TemporalExpression``, and appends it to the given list if valid.
-
-    Args:
-        text (str): The input text to analyze.
-        expressions (list[TemporalExpression]): A list to store extracted expressions.
-
-    Returns:
-        JavaGateway: The Py4J JavaGateway object used to manage the connection.
-
-    Example:
-        >>> from py4j.java_gateway import JavaGateway
-        >>> expressions: list[TemporalExpression] = []
-        >>> gateway = gateway_conn("Sec al II-lea a.ch. a fost o perioadă de mari schimbări.", expressions)
-        >>> # ... use the list of normalized temporal expressions.
-        >>> gateway.shutdown()
-
-    Note:
-        Assumes that a Py4J-compatible Java process is already running and exposing
-        the `ro.webdata.normalization.timespan.ro.TimeExpression` class.
-    """
-
-    gateway = JavaGateway()
-    print("Python connection established.")
-
-    java_object = gateway.jvm.ro.webdata.normalization.timespan.ro.TimeExpression(text)
-    time_expression = TemporalExpression(java_object)
-
-    if time_expression.is_valid:
-        expressions.append(time_expression)
-
-    return gateway
-
-
-def check_java_version():
+def check_java_version() -> None:
     """
     Verifies that Java is installed and meets the minimum required version.
 

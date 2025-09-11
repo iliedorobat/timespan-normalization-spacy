@@ -1,13 +1,19 @@
 import re
+import subprocess
+from pathlib import Path
 
+from py4j.java_gateway import JavaGateway
 from spacy import Language
 from spacy.tokens import Doc, Span
 from spacy.tokens._retokenize import Retokenizer
 from spacy.util import filter_spans
 
 from temporal_normalization import TimeSeries
-from temporal_normalization.commons.temporal_models import TemporalExpression
-from temporal_normalization.process.java_process import start_process
+from temporal_normalization.commons.temporal_models import (
+    extract_temporal_expressions,
+    TemporalExpression,
+)
+from temporal_normalization.process.java_process import start_conn, close_conn
 
 try:
 
@@ -24,7 +30,7 @@ class TemporalNormalization:
     """
     spaCy pipeline component for identifying and annotating temporal expressions in text.
 
-    This component calls the ``start_process`` method to extract temporal expressions, then
+    This component calls the ``start_conn`` method to extract temporal expressions, then
     aligns the matches with spaCy tokens using retokenization and sets a custom attribute
     containing associated time series metadata.
     """
@@ -43,6 +49,11 @@ class TemporalNormalization:
         Span.set_extension(TemporalNormalization.__FIELD, default=None, force=True)
         self.nlp = nlp
 
+        root_path = str(Path(__file__).resolve().parent.parent)
+        java_process, gateway = start_conn(root_path)
+        self.java_process: subprocess.Popen = java_process
+        self.gateway: JavaGateway = gateway
+
     def __call__(self, doc: Doc) -> Doc:
         """
         Apply the component to a spaCy Doc object.
@@ -57,13 +68,16 @@ class TemporalNormalization:
             Doc: The modified Doc object with temporal expressions processed.
         """
 
-        expressions: list[TemporalExpression] = []
-        start_process(doc.text, expressions)
+        expressions: list[TemporalExpression] = extract_temporal_expressions(
+            self.gateway, doc.text
+        )
         str_matches: list[str] = _prepare_str_patterns(expressions)
-
         _retokenize(doc, str_matches, expressions)
 
         return doc
+
+    def __del__(self):
+        close_conn(self.java_process, self.gateway)
 
 
 def _prepare_str_patterns(expressions: list[TemporalExpression]) -> list[str]:
@@ -104,6 +118,7 @@ def _retokenize(
                                                 each with time series metadata.
     """
 
+    # TODO: WIP
     regex_matches: list[str] = [rf"{re.escape(item)}" for item in str_matches]
     pattern = f"({'|'.join(regex_matches)})"
     matches = (

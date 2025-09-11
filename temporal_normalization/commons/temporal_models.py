@@ -1,6 +1,6 @@
 import json
 
-from py4j.java_gateway import JavaObject
+from py4j.java_gateway import JavaObject, JavaGateway
 
 from temporal_normalization.commons.temporal_types import TemporalType
 
@@ -54,6 +54,32 @@ class TemporalExpression:
     @staticmethod
     def is_valid_json(json_obj) -> bool:
         return "inputValue" in json_obj and "timeSeries" in json_obj
+
+
+def extract_temporal_expressions(
+    gateway: JavaGateway, text: str
+) -> list[TemporalExpression]:
+    """
+    Extracts valid temporal expressions from the given text using the Java temporal
+    normalization gateway.
+
+    Args:
+        gateway (JavaGateway): Active Py4J gateway connected to the Java temporal
+            normalization process.
+        text (str): Input text from which to extract temporal expressions.
+
+    Returns:
+        list[TemporalExpression]: A list containing valid temporal expressions.
+    """
+
+    expressions: list[TemporalExpression] = []
+    java_object = gateway.jvm.ro.webdata.normalization.timespan.ro.TimeExpression(text)
+    temporal_expression = TemporalExpression(java_object)
+
+    if temporal_expression.is_valid:
+        expressions.append(temporal_expression)
+
+    return expressions
 
 
 class TimeSeries:
