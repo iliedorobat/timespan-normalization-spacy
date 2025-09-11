@@ -1,10 +1,16 @@
-from temporal_normalization import TemporalExpression, TimeSeries
+import os
+from pathlib import Path
+
+from temporal_normalization import TimeSeries
 
 
 class InpInputFile:
     @staticmethod
     def get_input_path(dataset_type: str) -> str:
-        return f"validation/files/input/timespan_{dataset_type}.txt"
+        path = f"{str(Path(__file__).resolve().parent)}/files/input/timespan_{dataset_type}.txt"
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+
+        return path
 
     @staticmethod
     def read_file(dataset_type: str) -> list[str]:
@@ -18,13 +24,17 @@ class InpInputFile:
 class InpOutputFile:
     @staticmethod
     def get_output_path(dataset_type: str) -> str:
-        return f"validation/files/output/inp_{dataset_type}.csv"
+        path = f"{str(Path(__file__).resolve().parent)}/files/output/inp_{dataset_type}.csv"
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+
+        return path
 
     @staticmethod
     def write_header(dataset_type: str) -> None:
-        with open(
-            InpOutputFile.get_output_path(dataset_type), "w", encoding="utf-8"
-        ) as csv_file:
+        path = InpOutputFile.get_output_path(dataset_type)
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+
+        with open(path, "w", encoding="utf-8") as csv_file:
             entry = "|".join(
                 [
                     "input value",

@@ -1,4 +1,6 @@
+import os
 from enum import Enum
+from pathlib import Path
 
 from datasets import DatasetDict, Dataset
 from spacy.tokens import Span, Doc
@@ -70,7 +72,10 @@ class RonecTimespan:
 class RonecOutputFile:
     @staticmethod
     def get_output_path(dataset_type: str) -> str:
-        return f"validation/files/output/{dataset_type}.csv"
+        path = f"{str(Path(__file__).resolve().parent)}/files/output/{dataset_type}.csv"
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+
+        return path
 
     @staticmethod
     def write_entities_entries(

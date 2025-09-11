@@ -1,12 +1,9 @@
-import subprocess
-
-import spacy
-
 from temporal_normalization.commons.print_utils import console
 from temporal_normalization.index import (
     create_normalized_component,  # noqa: F401
     TemporalNormalization,  # noqa: F401
 )
+from tests.model import load_model
 
 LANG = "ro"
 MODEL = "ro_core_news_sm"
@@ -20,18 +17,7 @@ if __name__ == "__main__":
     # Display a warning if the language of the text is not Romanian.
     console.lang_warning(TEXT_RO, target_lang=LANG)
 
-    try:
-        # Load the spaCy model if it has already been downloaded
-        nlp = spacy.load(MODEL)
-    except OSError:
-        console.warning(f"Started downloading {MODEL}...")
-        # Download the Romanian model if it wasn't already downloaded
-        subprocess.run(["python", "-m", "spacy", "download", MODEL])
-        # Load the spaCy model
-        nlp = spacy.load(MODEL)
-
-    # Add "temporal_normalization" component to the spaCy pipeline
-    nlp.add_pipe("temporal_normalization", last=True)
+    nlp = load_model(MODEL)
     doc = nlp(TEXT_RO)
 
     # Display NLP-specific linguistic annotations

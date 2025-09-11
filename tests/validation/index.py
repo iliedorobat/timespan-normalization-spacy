@@ -1,8 +1,8 @@
 from datasets import load_dataset
 
 from inp_timespan import InpInputFile, InpOutputFile
-from mock.mock_data import ronec_example
-from model import load_model
+from tests.validation.ronec_mock_data import ronec_example
+from tests.model import load_model
 from ronec_timespan import Ronec, RonecOutputFile
 
 LANG = "ro"
@@ -86,4 +86,9 @@ def validate_inp_data(dataset_type: str):
 
 
 if __name__ == "__main__":
-    pass
+    validate_ronec_corpus("validation")
+    validate_ronec_corpus("test")
+
+    validate_inp_data("additional")
+    validate_inp_data("unique")
+    # validate_inp_data("all")
