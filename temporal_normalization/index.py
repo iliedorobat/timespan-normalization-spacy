@@ -2,6 +2,7 @@ import re
 
 from spacy import Language
 from spacy.tokens import Doc, Span
+from spacy.tokens._retokenize import Retokenizer
 from spacy.util import filter_spans
 
 from temporal_normalization import TimeSeries
@@ -103,7 +104,6 @@ def _retokenize(
                                                 each with time series metadata.
     """
 
-    # TODO: WIP: revalidate "validation" & "test" datasets
     regex_matches: list[str] = [rf"{re.escape(item)}" for item in str_matches]
     pattern = f"({'|'.join(regex_matches)})"
     matches = (
@@ -157,7 +157,7 @@ def _retokenize_entity(
     entity: Span,
     existed_entity: bool,
     retokenized_entities: list[Span],
-    retokenizer: Doc.retokenize,
+    retokenizer: Retokenizer,
 ) -> None:
     """
     Retokenizes and enriches a temporal entity span with matched time series data.
@@ -178,6 +178,8 @@ def _retokenize_entity(
     _assign_time_series(matched_ts, entity, existed_entity)
     _update_doc_ents(doc, entity)
     _merge_entity(doc, entity, retokenized_entities, retokenizer)
+
+    return None
 
 
 def _assign_time_series(
@@ -220,7 +222,7 @@ def _merge_entity(
     doc: Doc,
     entity: Span,
     retokenized_entities: list[Span],
-    retokenizer: Doc.retokenize,
+    retokenizer: Retokenizer,
 ) -> None:
     """
     Merges a custom entity span into the spaCy Doc if it is not already part of
@@ -229,7 +231,7 @@ def _merge_entity(
     Args:
         entity (Span): The named entity to enrich.
         retokenized_entities (list): Accumulator for entities that require retokenization.
-        retokenizer (Doc.retokenize): The spaCy retokenizer context.
+        retokenizer (Retokenizer): The spaCy retokenizer context.
     """
 
     if entity not in doc.ents:

@@ -12,7 +12,7 @@ setup(
     packages=find_packages(),
     include_package_data=True,
     package_data={
-        "temporal_normalization.libs": ["temporal-normalization-2.1.jar"],
+        "temporal_normalization.libs": ["temporal-normalization-2.1.0.jar"],
     },
     install_requires=["spacy>=3.0", "py4j", "langdetect"],
     classifiers=[

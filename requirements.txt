@@ -1,3 +1,4 @@
+datasets==4.0.0
 spacy==3.8.5
 py4j==0.10.9.9
 langdetect==1.0.9

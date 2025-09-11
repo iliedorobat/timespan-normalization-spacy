@@ -5,7 +5,12 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ### 2.1.0
 #### Changed
-- Bump TeN Framework 2.1
+- Bump TeN Framework 2.1.0
+- Escape special characters when building `regex_matches` in `_retokenize` method
+
+#### Added
+- `input_value` and `prepared_value` fields to `TimeSeries` class
+- INP validation tests (`validate_inp_data`)
 
 ### 2.0.2
 #### Changed
