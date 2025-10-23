@@ -47,10 +47,13 @@ class console:
 
     @staticmethod
     def lang_warning(query: str, target_lang: str):
-        if detect(query) != target_lang:
-            console.warning(
-                f'Detected language: "{detect(query)}" but required: "{target_lang}"'
-            )
+        try:
+            if detect(query) != target_lang:
+                console.warning(
+                    f'Detected language: "{detect(query)}" but required: "{target_lang}"'
+                )
+        except:
+            console.warning(f'Language could not be detected.')
 
     @staticmethod
     def tokens_table(document):

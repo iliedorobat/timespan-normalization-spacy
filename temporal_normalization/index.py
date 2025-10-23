@@ -77,6 +77,19 @@ class TemporalNormalization:
         return doc
 
     def __del__(self):
+        """
+        Clean up resources when the TemporalNormalization component is destroyed.
+
+        This method is automatically called by Python's garbage collector when the
+        `TemporalNormalization` instance is about to be deleted. It ensures that the
+        external Java process and the Py4J gateway connection used for temporal
+        expression extraction are properly closed.
+
+        By explicitly terminating the Java subprocess and shutting down the gateway,
+        the method prevents resource leaks such as orphaned Java processes or open
+        network sockets that might otherwise persist after the Python process ends.
+        """
+
         close_conn(self.java_process, self.gateway)
 
 
@@ -118,7 +131,6 @@ def _retokenize(
                                                 each with time series metadata.
     """
 
-    # TODO: WIP
     regex_matches: list[str] = [rf"{re.escape(item)}" for item in str_matches]
     pattern = f"({'|'.join(regex_matches)})"
     matches = (

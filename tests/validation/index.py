@@ -5,7 +5,6 @@ from tests.validation.ronec_mock_data import ronec_example
 from tests.model import load_model
 from ronec_timespan import Ronec, RonecOutputFile
 
-LANG = "ro"
 MODEL = "ro_core_news_sm"
 
 
