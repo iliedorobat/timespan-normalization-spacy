@@ -1,8 +1,10 @@
+import io
 import re
 import shutil
 import subprocess
+import threading
 
-from py4j.java_gateway import JavaGateway
+from py4j.java_gateway import JavaGateway, GatewayParameters, CallbackServerParameters
 from py4j.protocol import Py4JNetworkError
 
 from temporal_normalization.commons.print_utils import console
@@ -40,12 +42,14 @@ def start_conn(root_path: str) -> tuple[subprocess.Popen, JavaGateway]:
         text=True,
     )
 
-    for line in java_process.stdout:
-        if "Gateway Server Started." in line:
-            print(line.strip())
-            break
+    threading.Thread(target=drain_stream, args=(java_process.stdout,), daemon=True).start()
+    threading.Thread(target=drain_stream, args=(java_process.stderr,), daemon=True).start()
 
-    gateway = JavaGateway()
+    gateway = JavaGateway(
+        gateway_parameters=GatewayParameters(auto_convert=True, read_timeout=None),
+        callback_server_parameters=None,
+    )
+
     print("Python connection established.")
 
     return java_process, gateway
@@ -73,13 +77,41 @@ def close_conn(java_process: subprocess.Popen, gateway: JavaGateway) -> None:
     try:
         # Proper way to shut down Py4J
         gateway.shutdown()
-        print("Python connection closed.")
+        print("✅ Python connection closed.")
     except Py4JNetworkError:
-        print("Java process already shut down.")
+        print("⚠️ Java process already shut down.")
+    except Exception as e:
+        print(f"⚠️ Error shutting down gateway: {e}")
 
     # Terminate Java process
     java_process.terminate()
-    print("Java server is shutting down...")
+    java_process.wait()
+    print("✅ Java process terminated.")
+
+
+def drain_stream(stream: io.TextIOBase) -> None:
+    """
+    Consumes the output from a given stream until a specific marker is found,
+    then closes the stream.
+
+    This function is typically used to monitor the stdout or stderr of a subprocess
+    (e.g., a Java process started from Python) and detect when a certain event occurs,
+    such as the initialization of a gateway server. Once the marker line is encountered,
+    the function prints it (or logs it) and terminates the stream reading.
+
+    Args:
+        stream (io.TextIOBase): A text-based stream object to read from, usually
+                                subprocess.stdout or subprocess.stderr.
+
+    Raises:
+        AttributeError: If the provided `stream` does not have `readline` or `close` methods.
+    """
+    for line in iter(stream.readline, ''):
+        if "Gateway Server Started." in line:
+            print(line.strip())  # sau logging
+            break
+
+    stream.close()
 
 
 def check_java_version() -> None:
