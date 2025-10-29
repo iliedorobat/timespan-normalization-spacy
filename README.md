@@ -50,7 +50,7 @@ quality and reliability of date-related information extracted from text.
 To integrate TeNs into spaCy pipelines you need the following:
 
 ### Prerequisites
-- Python 3.x
+- Python 3.7+
 - JRE 11+
 - spaCy 3.x
 - py4j 0.10.9.9
