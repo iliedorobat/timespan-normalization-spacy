@@ -76,7 +76,6 @@ import subprocess
 import spacy
 
 from temporal_normalization.commons.print_utils import console
-from temporal_normalization.index import create_normalized_component, TemporalNormalization  # noqa: F401
 
 LANG = "ro"
 MODEL = "ro_core_news_sm"

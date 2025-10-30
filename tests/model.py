@@ -4,10 +4,6 @@ import spacy
 from spacy import Language
 
 from temporal_normalization import console
-from temporal_normalization.index import (
-    create_normalized_component,  # noqa: F401
-    TemporalNormalization,  # noqa: F401
-)
 
 
 def load_model(model_name: str) -> Language:
