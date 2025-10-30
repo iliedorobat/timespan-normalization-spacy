@@ -1,8 +1,4 @@
 from temporal_normalization.commons.print_utils import console
-from temporal_normalization.index import (
-    create_normalized_component,  # noqa: F401
-    TemporalNormalization,  # noqa: F401
-)
 from tests.model import load_model
 
 LANG = "ro"

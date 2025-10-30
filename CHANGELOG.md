@@ -3,6 +3,15 @@ All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 ---
 
+## 2.2.0
+### Added
+- Handled language detection exception
+- Prevented blocking the stream when processing more than 4000 entries on Windows
+- Prevented crashing the entire pipeline if the Java process dies
+
+### Changed
+- Bump spaCy 3.8.7
+
 ### 2.1.0
 #### Changed
 - Bump TeN Framework 2.1.0

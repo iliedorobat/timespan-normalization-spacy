@@ -1,8 +1,11 @@
+import gc
 import re
 import subprocess
+import time
 from pathlib import Path
 
 from py4j.java_gateway import JavaGateway
+from py4j.protocol import Py4JNetworkError
 from spacy import Language
 from spacy.tokens import Doc, Span
 from spacy.tokens._retokenize import Retokenizer
@@ -48,6 +51,7 @@ class TemporalNormalization:
 
         Span.set_extension(TemporalNormalization.__FIELD, default=None, force=True)
         self.nlp = nlp
+        self.count = 0
 
         root_path = str(Path(__file__).resolve().parent.parent)
         java_process, gateway = start_conn(root_path)
@@ -68,15 +72,41 @@ class TemporalNormalization:
             Doc: The modified Doc object with temporal expressions processed.
         """
 
-        expressions: list[TemporalExpression] = extract_temporal_expressions(
-            self.gateway, doc.text
-        )
-        str_matches: list[str] = _prepare_str_patterns(expressions)
-        _retokenize(doc, str_matches, expressions)
+        self.count += 1
+
+        if self.count % 1000 == 0:
+            self.count = 1
+
+            gc.collect()
+            time.sleep(0.01)
+
+        try:
+            expressions: list[TemporalExpression] = extract_temporal_expressions(
+                self.gateway, doc.text
+            )
+            str_matches: list[str] = _prepare_str_patterns(expressions)
+            _retokenize(doc, str_matches, expressions)
+        except Py4JNetworkError as e:
+            print(f"⚠️ Py4J network error: {e}")
+        except Exception as e:
+            print(f"⚠️ Unexpected error during extract_temporal_expressions: {e}")
 
         return doc
 
     def __del__(self):
+        """
+        Clean up resources when the TemporalNormalization component is destroyed.
+
+        This method is automatically called by Python's garbage collector when the
+        `TemporalNormalization` instance is about to be deleted. It ensures that the
+        external Java process and the Py4J gateway connection used for temporal
+        expression extraction are properly closed.
+
+        By explicitly terminating the Java subprocess and shutting down the gateway,
+        the method prevents resource leaks such as orphaned Java processes or open
+        network sockets that might otherwise persist after the Python process ends.
+        """
+
         close_conn(self.java_process, self.gateway)
 
 
@@ -118,7 +148,6 @@ def _retokenize(
                                                 each with time series metadata.
     """
 
-    # TODO: WIP
     regex_matches: list[str] = [rf"{re.escape(item)}" for item in str_matches]
     pattern = f"({'|'.join(regex_matches)})"
     matches = (

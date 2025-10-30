@@ -1,4 +1,4 @@
-# Temporal Expressions Normalization for spaCy (TeNs)
+# Temporal Expression Normalization for spaCy (TeNs)
 
 <b>Temporal Expressions Normalization spaCy (TeNs)</b> is a powerful pipeline component for spaCy that seamlessly
 identifies and parses date entities in text. It leverages the <b>[Temporal Expressions Normalization Framework](
@@ -50,7 +50,7 @@ quality and reliability of date-related information extracted from text.
 To integrate TeNs into spaCy pipelines you need the following:
 
 ### Prerequisites
-- Python 3.x
+- Python 3.7+
 - JRE 11+
 - spaCy 3.x
 - py4j 0.10.9.9
@@ -76,7 +76,6 @@ import subprocess
 import spacy
 
 from temporal_normalization.commons.print_utils import console
-from temporal_normalization.index import create_normalized_component, TemporalNormalization  # noqa: F401
 
 LANG = "ro"
 MODEL = "ro_core_news_sm"
