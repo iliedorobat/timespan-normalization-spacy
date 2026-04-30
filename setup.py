@@ -1,5 +1,3 @@
-from pathlib import Path
-
 from setuptools import setup, find_packages
 
 setup(
@@ -9,7 +7,7 @@ setup(
     description="A spaCy plugin for temporal normalization and extraction of "
     "historical dates in Romanian narrative texts.",
     keywords="spacy, nlp, temporal normalization, timex, historical dates, romanian",
-    long_description=(Path(__file__).parent / "README.md").read_text(encoding="utf-8"),
+    long_description=open("README.md").read(),
     long_description_content_type="text/markdown",
     url="https://github.com/iliedorobat/timespan-normalization-spacy",
     packages=find_packages(),
