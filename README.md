@@ -50,8 +50,8 @@ quality and reliability of date-related information extracted from text.
 To integrate TeNs into spaCy pipelines you need the following:
 
 ### Prerequisites
-- Python 3.7+
-- JRE 11+
+- Python 3.9-3.12
+- JRE 11-17
 - spaCy 3.x
 - py4j 0.10.9.9
 - langdetect 1.0.9
@@ -95,7 +95,7 @@ try:
 except OSError:
     console.warning(f'Started downloading {MODEL}...')
     # Download the Romanian model if it wasn't already downloaded
-    subprocess.run(["python", "-m", "spacy", "download", MODEL])
+    subprocess.run(["python3", "-m", "spacy", "download", MODEL])
     # Load the spaCy model
     nlp = spacy.load(MODEL)
 
