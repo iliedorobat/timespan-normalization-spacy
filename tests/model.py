@@ -1,7 +1,9 @@
 import subprocess
+import sys
 
 import spacy
 from spacy import Language
+from spacy.cli import download
 
 from temporal_normalization import console
 
@@ -33,7 +35,7 @@ def load_model(model_name: str) -> Language:
     except OSError:
         console.warning(f"Started downloading {model_name}...")
         # Download the Romanian model if it wasn't already downloaded
-        subprocess.run(["python", "-m", "spacy", "download", model_name])
+        download(model_name)
         # Load the spaCy model
         nlp = spacy.load(model_name)
 

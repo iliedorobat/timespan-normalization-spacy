@@ -10,6 +10,8 @@ from py4j.protocol import Py4JNetworkError
 from temporal_normalization.commons.print_utils import console
 
 
+gateway_started = threading.Event()
+
 def start_conn(root_path: str) -> tuple[subprocess.Popen, JavaGateway]:
     """
     Starts the Java temporal normalization process and establishes a Py4J gateway connection.
@@ -35,6 +37,11 @@ def start_conn(root_path: str) -> tuple[subprocess.Popen, JavaGateway]:
         f"{root_path}/temporal_normalization/libs/temporal-normalization-2.1.0.jar"
     )
 
+    def stdout_callback(line: str):
+        if "Gateway Server Started" in line:
+            gateway_started.set()
+        print(line.strip())
+
     java_process = subprocess.Popen(
         ["java", "-jar", jar_path, "--python"],
         stdout=subprocess.PIPE,
@@ -42,8 +49,12 @@ def start_conn(root_path: str) -> tuple[subprocess.Popen, JavaGateway]:
         text=True,
     )
 
-    threading.Thread(target=drain_stream, args=(java_process.stdout,), daemon=True).start()
+    threading.Thread(target=drain_stream, args=(java_process.stdout, stdout_callback), daemon=True).start()
     threading.Thread(target=drain_stream, args=(java_process.stderr,), daemon=True).start()
+
+    if not gateway_started.wait(timeout=10.0):
+        java_process.terminate()
+        raise RuntimeError("Java Gateway did not start within 10 seconds")
 
     gateway = JavaGateway(
         gateway_parameters=GatewayParameters(auto_convert=True, read_timeout=None),
@@ -89,7 +100,7 @@ def close_conn(java_process: subprocess.Popen, gateway: JavaGateway) -> None:
     print("✅ Java process terminated.")
 
 
-def drain_stream(stream: io.TextIOBase) -> None:
+def drain_stream(stream: io.TextIOBase, callback=None) -> None:
     """
     Consumes the output from a given stream until a specific marker is found,
     then closes the stream.
@@ -102,14 +113,18 @@ def drain_stream(stream: io.TextIOBase) -> None:
     Args:
         stream (io.TextIOBase): A text-based stream object to read from, usually
                                 subprocess.stdout or subprocess.stderr.
+        callback (callable, optional): A function that takes a single string argument (line).
+                                       It will be called for every line read from the stream.
+                                       Useful for detecting specific markers, logging, or
+                                       triggering events when certain output appears.
 
     Raises:
         AttributeError: If the provided `stream` does not have `readline` or `close` methods.
     """
-    for line in iter(stream.readline, ''):
-        if "Gateway Server Started." in line:
-            print(line.strip())  # sau logging
-            break
+    for line in iter(stream.readline, ""):
+        line = line.strip()
+        if callback:
+            callback(line)
 
     stream.close()
 
