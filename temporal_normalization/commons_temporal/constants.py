@@ -1,0 +1,12 @@
+DBPEDIA_CENTURY_PLACEHOLDER = "_century"
+DBPEDIA_MILLENNIUM_PLACEHOLDER = "_millennium"
+EMPTY_VALUE_PLACEHOLDER = ""
+UNDERSCORE_PLACEHOLDER = "_"
+STRING_LIST_SEPARATOR = " ### "
+
+
+NS_DBPEDIA_RESOURCE = "https://dbpedia.org/page/"
+
+
+# Environment variables
+PRINT_ERROR = True
