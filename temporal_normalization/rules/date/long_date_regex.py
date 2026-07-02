@@ -1,5 +1,3 @@
-from temporal_normalization.rules.timespan_regex import CASE_INSENSITIVE
-
 # -------------------------
 # LONG DATE REGEX
 # -------------------------
@@ -10,18 +8,15 @@ from temporal_normalization.rules.timespan_regex import CASE_INSENSITIVE
 DATE_SEPARATOR = ";"
 
 LONG_DATE_OPTIONS = (
-        CASE_INSENSITIVE
-        + "("
-        + "^"
-        + r"s:[\d]{1,2}"
+        r"^"
+        + r"s:\d{1,2}"
         + DATE_SEPARATOR
-        + r"a:[\d]{1,4}"
+        + r"a:\d{1,4}"
         + DATE_SEPARATOR
-        + r"l:[\d]{1,2}"
+        + r"l:\d{1,2}"
         + DATE_SEPARATOR
-        + r"z:[\d]{1,2}"
-        + "$"
-        + ")"
+        + r"z:\d{1,2}"
+        + r"$"
 )
 
 LONG_DATE_REGEXES = {

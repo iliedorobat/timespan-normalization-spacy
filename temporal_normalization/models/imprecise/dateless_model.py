@@ -18,12 +18,12 @@ class DatelessModel(YearModel):
 
     PATTERN: str = rf"({YEAR_INTERVAL_PREFIXED}){REGEX_OR}({YEAR_INTERVAL_BASE})"
 
-    def __init__(self, original: str, value: str, regex: str, historical_only: bool):
+    def __init__(self, original: str, value: str, regex_str: str, historical_only: bool):
         super().__init__()
 
         self.original = original
         self.value = value
-        self.regex = regex
+        self.regex = regex_str
         self.historical_only = historical_only
 
         # logic direct aici (fără __post_init__)

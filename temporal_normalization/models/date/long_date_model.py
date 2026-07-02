@@ -65,7 +65,7 @@ class LongDateModel(TimePeriodModel):
 
         try:
             century = int(century_str)
-            millennium = century_to_millennium(century)
+            millennium = century_to_millennium(century).millennium
             self.millennium_start = millennium
             self.millennium_end = millennium
         except ValueError as e:

@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
+import regex
+
 from temporal_normalization.commons import (
     clear_christum_notation,
     DMY_PLACEHOLDER,
@@ -11,7 +13,7 @@ from temporal_normalization.commons import (
 )
 from temporal_normalization.commons_temporal.date_utils import Date
 from temporal_normalization.models.time_period_model import TimePeriodModel
-from temporal_normalization.rules import REGEX_INTERVAL_DELIMITER, REGEX_DATE_SEPARATOR
+from temporal_normalization.rules import REGEX_INTERVAL_DELIMITER
 
 
 @dataclass
@@ -29,7 +31,7 @@ class DateModel(TimePeriodModel):
         self._set_date_model(original, value, order, historical_only)
 
     def _set_date_model(self, original: str, value: str, order: str, historical_only: bool):
-        interval_values = value.split(REGEX_INTERVAL_DELIMITER)
+        interval_values = regex.split(REGEX_INTERVAL_DELIMITER, value, flags=regex.IGNORECASE)
 
         if len(interval_values) == 2:
             self.set_era(
@@ -121,8 +123,7 @@ class DateModel(TimePeriodModel):
 
     @staticmethod
     def _get_year(main_date: str, second_date: str, order: str):
-        prepared_date = Date.prepare_date(main_date)
-        values = prepared_date.split(REGEX_DATE_SEPARATOR)
+        values = Date.get_atomic_values(main_date)
 
         try:
             # values.length == 4 if the month name is abbreviated (E.g.: "aug.")
@@ -143,8 +144,7 @@ class DateModel(TimePeriodModel):
 
     @staticmethod
     def _get_month(main_date: str, second_date: str, order: str):
-        prepared_date = Date.prepare_date(main_date)
-        values = prepared_date.split(REGEX_DATE_SEPARATOR)
+        values = Date.get_atomic_values(main_date)
 
         if order in (DMY_PLACEHOLDER, YMD_PLACEHOLDER):
             try:
@@ -152,9 +152,7 @@ class DateModel(TimePeriodModel):
 
             except IndexError:
                 # E.g.: 19-26 noiembrie 2010
-                prepared_second_date = Date.prepare_date(second_date)
-                second_values = prepared_second_date.split(REGEX_DATE_SEPARATOR)
-
+                second_values = Date.get_atomic_values(second_date)
                 return Date.get_month_name(second_values[1].strip())
 
             except Exception as e:
@@ -165,8 +163,7 @@ class DateModel(TimePeriodModel):
 
     @staticmethod
     def _get_day(main_date: str, second_date: str, order: str):
-        prepared_date = Date.prepare_date(main_date)
-        values = prepared_date.split(REGEX_DATE_SEPARATOR)
+        values = Date.get_atomic_values(main_date)
 
         if order == DMY_PLACEHOLDER:
             return values[0]

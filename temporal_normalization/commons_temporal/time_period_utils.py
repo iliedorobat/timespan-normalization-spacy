@@ -1,6 +1,8 @@
 import re
 from typing import List, Optional, Set
 
+import regex
+
 from temporal_normalization.commons import (
     CHRISTUM_AD_PLACEHOLDER,
     clear_christum_notation,
@@ -18,6 +20,8 @@ from temporal_normalization.rules import (
     FORTH_QUARTER,
     MIDDLE_OF,
     MILLENNIUM_LABEL,
+    REGEX_INTERVAL_PREFIX,
+    REGEX_INTERVAL_CONJUNCTION,
     SECOND_QUARTER,
     SECOND_HALF,
     START_END,
@@ -69,6 +73,17 @@ def sanitize_time_period(value: str) -> str:
     prepared_value = re.sub(r"\s*", EMPTY_VALUE_PLACEHOLDER, prepared_value)
 
     return prepared_value
+
+
+# TODO: add documentation
+def sanitize_time_period_interval(value: str) -> str:
+    prepared_value = (
+        regex.sub(REGEX_INTERVAL_PREFIX, "", value, flags=regex.IGNORECASE)
+    )
+    prepared_value = (
+        regex.sub(REGEX_INTERVAL_CONJUNCTION, " - ", prepared_value, flags=regex.IGNORECASE)
+    )
+    return sanitize_time_period(prepared_value.strip())
 
 # =========================================================
 # GROUP EXTRACTION

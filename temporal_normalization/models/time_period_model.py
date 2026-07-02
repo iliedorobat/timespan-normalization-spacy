@@ -3,6 +3,8 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Optional, Set
 
+import regex
+
 from temporal_normalization.commons import (
     CHRISTUM_AD_PLACEHOLDER,
     CHRISTUM_BC_LABEL,
@@ -22,6 +24,15 @@ from temporal_normalization.commons_temporal.timespan_types import (
 )
 from .dbpedia_model import DBpediaModel
 from .time_model import TimeModel
+from ..commons_temporal.time_period_utils import sanitize_time_period_interval, sanitize_time_period
+from ..rules import CENTURY_INTERVAL_PREFIXED, MILLENNIUM_INTERVAL_PREFIXED
+from ..rules.year import YEAR_OR_SEPARATOR, YEAR_INTERVAL_PREFIXED
+
+INTERVAL_PREFIXES = [
+    CENTURY_INTERVAL_PREFIXED,
+    MILLENNIUM_INTERVAL_PREFIXED,
+    YEAR_INTERVAL_PREFIXED,
+]
 
 
 @dataclass
@@ -106,6 +117,17 @@ class TimePeriodModel(TimeModel):
             return DBpediaModel.prepare_uri(self.era_end, self.year_end, matched_type)
 
         return None
+
+    def prepare_value(self, value: str, regex_str: str) -> str:
+        if regex_str in INTERVAL_PREFIXES:
+            return sanitize_time_period_interval(value)
+
+        # TODO: check if this guard can be used for all INTERVAL_PREFIXES
+        prepared_value = regex.sub(YEAR_OR_SEPARATOR, " - ", value, flags=regex.IGNORECASE) \
+            if regex_str == YEAR_INTERVAL_PREFIXED \
+            else value
+
+        return sanitize_time_period(prepared_value)
 
     # =========================================================
     # Set builders

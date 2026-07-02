@@ -2,6 +2,12 @@ from __future__ import annotations
 
 import calendar
 import re
+from typing import Any
+
+import regex
+
+from temporal_normalization.commons_temporal.time_utils import clear_christum_notation
+from temporal_normalization.rules import REGEX_DATE_SEPARATOR
 
 
 class Date:
@@ -21,6 +27,13 @@ class Date:
     @staticmethod
     def prepare_date(value: str) -> str:
         return value.replace(",", "").strip()
+
+    @staticmethod
+    def get_atomic_values(raw_date: str, clean_christum_notation: bool=False, separator: str=REGEX_DATE_SEPARATOR) -> list[str | Any]:
+        # TODO: check if clean_christum_notation can always be True (in order to remove it)
+        prepared_date = clear_christum_notation(raw_date) if clean_christum_notation else raw_date
+        prepared_date = Date.prepare_date(prepared_date)
+        return regex.split(separator, prepared_date, flags=regex.IGNORECASE)
 
     # =========================================================
     # getMonthName()

@@ -1,7 +1,8 @@
 from __future__ import annotations
 
-import re
 from dataclasses import dataclass
+
+import regex
 
 from temporal_normalization.commons import (
     clear_christum_notation,
@@ -34,7 +35,7 @@ class InaccurateYearModel(TimePeriodModel):
         self.set_date_model(original, value, historical_only)
 
     def set_date_model(self, original: str, value: str, historical_only: bool) -> None:
-        interval_values = value.split(REGEX_INTERVAL_DELIMITER)
+        interval_values = regex.split(REGEX_INTERVAL_DELIMITER, value, flags=regex.IGNORECASE)
 
         if len(interval_values) == 2:
             self.set_era(original, interval_values[0], interval_values[1], True)
@@ -54,7 +55,7 @@ class InaccurateYearModel(TimePeriodModel):
             self.set_date(original, prepared_value, START_PLACEHOLDER, historical_only)
 
     def set_date(self, original: str, value: str, position: str, historical_only: bool) -> None:
-        year = re.sub(self.REGEX_NON_DIGIT, EMPTY_VALUE_PLACEHOLDER, value)
+        year = regex.sub(self.REGEX_NON_DIGIT, EMPTY_VALUE_PLACEHOLDER, value)
 
         self.set_millennium_from_year(original, year, position, historical_only)
         self.set_century_from_year(original, year, position, historical_only)

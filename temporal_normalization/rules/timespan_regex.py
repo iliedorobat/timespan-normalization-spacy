@@ -14,7 +14,9 @@ REGEX_PUNCTUATION_UNLIMITED = REGEX_PUNCTUATION + "*"
 
 # The separator must always be of the shape "(\s+-\s+)"
 REGEX_INTERVAL_DELIMITER = r"\s*(?:-|–|—)\s*"
-REGEX_INTERVAL_CONJUNCTION = r"\s*(?:-|–|—|([sşș]i))\s*"
+# TODO: check the if changing the old expression introduces bugs
+#  REGEX_INTERVAL_CONJUNCTION = r"\s*(?:-|–|—|([sşș]i))\s*"
+REGEX_INTERVAL_CONJUNCTION = r"\s*(?:-|–|—|\b[sşș]i\b)\s*"
 REGEX_INTERVAL_PREFIX = rf"(?:[iî]ntre|[iî]n\s*interval(?:ul|u)?)\s*"
 REGEX_DATE_SEPARATOR = r"[\./\-\s]+"
 
@@ -50,26 +52,30 @@ REGEX_CHRISTUM = r"(ch[r]?|hr|c)[\. ]*"
 # -------------------------
 
 # Anno Domini (After Christ)
-AGE_AD = (
-        TEXT_START
-        + CASE_INSENSITIVE
-        + "("
-        + "(" + r"e[\.]?n[\.]?" + ")" + REGEX_OR
-        + "(" + r"[dp][\. ]*" + REGEX_CHRISTUM + ")"
-        + ")"
-        + TEXT_END
-)
+# TODO: remove
+# AGE_AD = (
+#         TEXT_START
+#         + CASE_INSENSITIVE
+#         + "("
+#         + "(" + r"e[\.]?n[\.]?" + ")" + REGEX_OR
+#         + "(" + r"[dp][\. ]*" + REGEX_CHRISTUM + ")"
+#         + ")"
+#         + TEXT_END
+# )
+AGE_AD = r"(?<!\w)((?:e\.?n\.?)|(?:[dp][\. ]*(?:ch[r]?|hr|c)[\. ]*))(?!\w)"
 
 # Before Christ
-AGE_BC = (
-        TEXT_START
-        + CASE_INSENSITIVE
-        + "("
-        + "(" + r"[iî][\.]?e[\.]?n[\.]?" + ")" + REGEX_OR
-        + "(" + r"[abiî][\. ]*" + REGEX_CHRISTUM + ")"
-        + ")"
-        + TEXT_END
-)
+# TODO: remove
+# AGE_BC = (
+#         TEXT_START
+#         + CASE_INSENSITIVE
+#         + "("
+#         + "(" + r"[iî][\.]?e[\.]?n[\.]?" + ")" + REGEX_OR
+#         + "(" + r"[abiî][\. ]*" + REGEX_CHRISTUM + ")"
+#         + ")"
+#         + TEXT_END
+# )
+AGE_BC = r"(?<!\w)([abiî][\. ]*(?:ch[r]?|hr|c)[\. ]*)(?!\w)"
 
 # Anno Domini / Before Christ notation wrapper
 
@@ -80,7 +86,7 @@ AD_BC_OPTIONAL = r"(\s*" + CHRISTUM_NOTATION + ")?"
 # MONTHS
 # -------------------------
 
-MONTHS_DIGITS = r"(?:0?(?:1|2|3|4|5|6|7|8|9))|10|11|12"
+MONTHS_DIGITS = r"(?:0?[1-9]|10|11|12)"
 
 MONTHS_RO = (
         "("

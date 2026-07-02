@@ -2,21 +2,18 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
+import regex
+
 from temporal_normalization.commons import (
     END_PLACEHOLDER,
     get_end_time,
     get_start_time,
-    sanitize_time_period,
     START_PLACEHOLDER,
     time_period_to_number,
 )
 from temporal_normalization.models.time_period_model import TimePeriodModel
 from temporal_normalization.rules import (
-    CASE_INSENSITIVE,
-    MILLENNIUM_INTERVAL_PREFIXED,
-    REGEX_INTERVAL_PREFIX,
-    REGEX_INTERVAL_CONJUNCTION,
-    REGEX_INTERVAL_DELIMITER,
+    REGEX_INTERVAL_DELIMITER, REGEX_INTERVAL_CONJUNCTION,
 )
 
 
@@ -26,26 +23,26 @@ class MillenniumModel(TimePeriodModel):
     Model pentru intervale de tip mileniu.
     """
 
-    def __init__(self, original: str, value: str, regex: str, historical_only: bool):
+    def __init__(self, original: str, value: str, regex_str: str, historical_only: bool):
         super().__init__()
 
         self.original = original
         self.value = value
-        self.regex = regex
+        # TODO: rename it to regex_str
+        self.regex = regex_str
         self.historical_only = historical_only
 
-        self.set_millennium_model(original, value, regex, historical_only)
+        self.set_millennium_model(original, value, regex_str, historical_only)
 
     def set_millennium_model(
             self,
             original: str,
             value: str,
-            regex: str,
+            regex_str: str,
             historical_only: bool,
     ) -> None:
-
-        prepared_value = self.prepare_value(value, regex)
-        interval_values = prepared_value.split(REGEX_INTERVAL_DELIMITER)
+        prepared_value = self.prepare_value(value, regex_str)
+        interval_values = regex.split(REGEX_INTERVAL_CONJUNCTION, prepared_value, flags=regex.IGNORECASE)
 
         if len(interval_values) == 2:
             self.set_era(original, interval_values[0], interval_values[1], False)
@@ -71,18 +68,6 @@ class MillenniumModel(TimePeriodModel):
 
             self.set_millennium_date(original, millennium_value, END_PLACEHOLDER, historical_only)
             self.set_millennium_date(original, millennium_value, START_PLACEHOLDER, historical_only)
-
-    def prepare_value(self, value: str, regex: str) -> str:
-        if regex == MILLENNIUM_INTERVAL_PREFIXED:
-            prepared_value = (
-                value
-                .replace(CASE_INSENSITIVE + REGEX_INTERVAL_PREFIX, "")
-                .replace(CASE_INSENSITIVE + REGEX_INTERVAL_CONJUNCTION, " - ")
-                .strip()
-            )
-            return sanitize_time_period(prepared_value)
-
-        return sanitize_time_period(value)
 
     def set_millennium_date(
             self,

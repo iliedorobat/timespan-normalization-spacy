@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
+import regex
+
 from temporal_normalization.commons import (
     clear_christum_notation,
     END_PLACEHOLDER,
@@ -10,7 +12,7 @@ from temporal_normalization.commons import (
 )
 from temporal_normalization.commons_temporal.date_utils import Date
 from temporal_normalization.models.time_period_model import TimePeriodModel
-from temporal_normalization.rules import REGEX_INTERVAL_DELIMITER, REGEX_DATE_SEPARATOR
+from temporal_normalization.rules import REGEX_INTERVAL_DELIMITER
 
 
 @dataclass
@@ -27,7 +29,7 @@ class ShortDateModel(TimePeriodModel):
         self._set_date_model(original, value, order, historical_only)
 
     def _set_date_model(self, original: str, value: str, order: str, historical_only: bool):
-        interval_values = value.split(REGEX_INTERVAL_DELIMITER)
+        interval_values = regex.split(REGEX_INTERVAL_DELIMITER, value, flags=regex.IGNORECASE)
 
         if len(interval_values) == 2:
             self.set_era(original, interval_values[0], interval_values[1], True)
@@ -67,8 +69,8 @@ class ShortDateModel(TimePeriodModel):
             self.set_month(original, month, position, historical_only)
 
     def _get_year(self, start_date: str, end_date: str, order: str, position: str):
-        start_values = self._split_date(start_date)
-        end_values = self._split_date(end_date)
+        start_values = Date.get_atomic_values(start_date, True)
+        end_values = Date.get_atomic_values(end_date, True)
 
         if order == MY_PLACEHOLDER:
 
@@ -101,13 +103,5 @@ class ShortDateModel(TimePeriodModel):
         return None
 
     def _get_month(self, date: str):
-        prepared_value = Date.prepare_date(date)
-        values = prepared_value.split(REGEX_DATE_SEPARATOR)
-
+        values = Date.get_atomic_values(date)
         return Date.get_month_name(values[0].strip())
-
-    def _split_date(self, date: str):
-        prepared_value = clear_christum_notation(date)
-        prepared_value = Date.prepare_date(prepared_value)
-
-        return prepared_value.split(REGEX_DATE_SEPARATOR)

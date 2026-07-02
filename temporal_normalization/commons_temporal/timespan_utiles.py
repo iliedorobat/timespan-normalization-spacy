@@ -91,32 +91,31 @@ def prepare_timespan_models(original: str, historical_only: bool, sanitize: bool
     residual_value = sanitize_value(original)
     timespan_models: List["TimespanModel"] = []
 
-    # residual_value = update_matched_values(residual_value, timespan_models, historical_only, sanitize, UNKNOWN, TemporalType.UNKNOWN)
+    residual_value = update_matched_values(residual_value, timespan_models, historical_only, sanitize, UNKNOWN, TemporalType.UNKNOWN)
 
-    # residual_value = update_matched_values(residual_value, timespan_models, historical_only, sanitize, DATE_DMY_INTERVAL, TemporalType.DATE)
-    # residual_value = update_matched_values(residual_value, timespan_models, historical_only, sanitize, DATE_YMD_INTERVAL, TemporalType.DATE)
-    # residual_value = update_matched_values(residual_value, timespan_models, historical_only, sanitize, DATE_MY_INTERVAL, TemporalType.DATE)
-    # residual_value = update_matched_values(residual_value, timespan_models, historical_only, sanitize, DATE_DMY_OPTIONS, TemporalType.DATE)
-    # residual_value = update_matched_values(residual_value, timespan_models, historical_only, sanitize, DATE_YMD_OPTIONS, TemporalType.DATE)
-    # residual_value = update_matched_values(residual_value, timespan_models, historical_only, sanitize, DATE_MY_OPTIONS, TemporalType.DATE)
-    # residual_value = update_matched_values(residual_value, timespan_models, historical_only, sanitize, LONG_DATE_OPTIONS, TemporalType.DATE)
-    #
-    # residual_value = update_matched_values(residual_value, timespan_models, historical_only, sanitize, CENTURY_INTERVAL_PREFIXED, TemporalType.CENTURY)
+    residual_value = update_matched_values(residual_value, timespan_models, historical_only, sanitize, DATE_DMY_INTERVAL, TemporalType.DATE)
+    residual_value = update_matched_values(residual_value, timespan_models, historical_only, sanitize, DATE_YMD_INTERVAL, TemporalType.DATE)
+    residual_value = update_matched_values(residual_value, timespan_models, historical_only, sanitize, DATE_MY_INTERVAL, TemporalType.DATE)
+    residual_value = update_matched_values(residual_value, timespan_models, historical_only, sanitize, DATE_DMY_OPTIONS, TemporalType.DATE)
+    residual_value = update_matched_values(residual_value, timespan_models, historical_only, sanitize, DATE_YMD_OPTIONS, TemporalType.DATE)
+    residual_value = update_matched_values(residual_value, timespan_models, historical_only, sanitize, DATE_MY_OPTIONS, TemporalType.DATE)
+    residual_value = update_matched_values(residual_value, timespan_models, historical_only, sanitize, LONG_DATE_OPTIONS, TemporalType.DATE)
+
+    residual_value = update_matched_values(residual_value, timespan_models, historical_only, sanitize, CENTURY_INTERVAL_PREFIXED, TemporalType.CENTURY)
     residual_value = update_matched_values(residual_value, timespan_models, historical_only, sanitize, CENTURY_INTERVAL_BASE, TemporalType.CENTURY)
     residual_value = update_matched_values(residual_value, timespan_models, historical_only, sanitize, CENTURY_OPTIONS, TemporalType.CENTURY)
-    # residual_value = update_matched_values(residual_value, timespan_models, historical_only, sanitize, MILLENNIUM_INTERVAL_PREFIXED, TemporalType.MILLENNIUM)
-    # residual_value = update_matched_values(residual_value, timespan_models, historical_only, sanitize, MILLENNIUM_INTERVAL_BASE, TemporalType.MILLENNIUM)
+    residual_value = update_matched_values(residual_value, timespan_models, historical_only, sanitize, MILLENNIUM_INTERVAL_PREFIXED, TemporalType.MILLENNIUM)
+    residual_value = update_matched_values(residual_value, timespan_models, historical_only, sanitize, MILLENNIUM_INTERVAL_BASE, TemporalType.MILLENNIUM)
     residual_value = update_matched_values(residual_value, timespan_models, historical_only, sanitize, MILLENNIUM_OPTIONS, TemporalType.MILLENNIUM)
-    # residual_value = update_matched_values(residual_value, timespan_models, historical_only, sanitize, OTHER_CENTURY_ROMAN_INTERVAL, TemporalType.CENTURY)
-    # residual_value = update_matched_values(residual_value, timespan_models, historical_only, sanitize, OTHER_CENTURY_ROMAN_OPTIONS, TemporalType.CENTURY)
+    residual_value = update_matched_values(residual_value, timespan_models, historical_only, sanitize, OTHER_CENTURY_ROMAN_INTERVAL, TemporalType.CENTURY)
+    residual_value = update_matched_values(residual_value, timespan_models, historical_only, sanitize, OTHER_CENTURY_ROMAN_OPTIONS, TemporalType.CENTURY)
 
-    # for i in range(len(AGE_OPTIONS)):
-    #     residual_value = update_matched_values(residual_value, timespan_models, historical_only, sanitize, AGE_OPTIONS[i], TemporalType.EPOCH)
+    for i in range(len(AGE_OPTIONS)):
+        residual_value = update_matched_values(residual_value, timespan_models, historical_only, sanitize, AGE_OPTIONS[i], TemporalType.EPOCH)
 
     residual_value = update_matched_values(residual_value, timespan_models, historical_only, sanitize, AFTER_INTERVAL, TemporalType.YEAR)
     residual_value = update_matched_values(residual_value, timespan_models, historical_only, sanitize, BEFORE_INTERVAL, TemporalType.YEAR)
-    # FIXME: APPROX_AGES_INTERVAL
-    # residual_value = update_matched_values(residual_value, timespan_models, historical_only, sanitize, APPROX_AGES_INTERVAL, TemporalType.YEAR)
+    residual_value = update_matched_values(residual_value, timespan_models, historical_only, sanitize, APPROX_AGES_INTERVAL, TemporalType.YEAR)
     residual_value = update_matched_values(residual_value, timespan_models, historical_only, sanitize, YEAR_INTERVAL_PREFIXED, TemporalType.YEAR)
     residual_value = update_matched_values(residual_value, timespan_models, historical_only, sanitize, YEAR_INTERVAL_BASE, TemporalType.YEAR)
     residual_value = update_matched_values(residual_value, timespan_models, historical_only, sanitize, YEAR_3_4_DIGITS_SPECIAL_INTERVAL, TemporalType.YEAR)
@@ -153,10 +152,6 @@ def update_matched_values(
     )
 
     pattern = regex.compile(regex_str, flags=re.IGNORECASE)
-
-    # p2 = regex.compile(CENTURY_ROMAN, regex.IGNORECASE | regex.DEBUG)
-    # p2.search("sec. al xix-lea")
-    # return
 
     for match in pattern.finditer(residual_value):
         matched_value = match.group()

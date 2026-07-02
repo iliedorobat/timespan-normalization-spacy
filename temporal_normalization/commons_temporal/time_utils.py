@@ -2,6 +2,8 @@ import re
 from dataclasses import dataclass
 from typing import Optional
 
+import regex
+
 from temporal_normalization.rules import AGE_BC, AGE_AD
 from temporal_normalization.rules.imprecise import APPROX_NOTATION
 
@@ -101,8 +103,8 @@ def normalize_christum_notation(value: str) -> str:
     - AGE_BC → "__BC__"
     - AGE_AD → "__AD__"
     """
-    value = re.sub(AGE_BC, CHRISTUM_BC_PLACEHOLDER, value)
-    value = re.sub(AGE_AD, CHRISTUM_AD_PLACEHOLDER, value)
+    value = regex.sub(AGE_BC, CHRISTUM_BC_PLACEHOLDER, value)
+    value = regex.sub(AGE_AD, CHRISTUM_AD_PLACEHOLDER, value)
     return value
 
 

@@ -1,12 +1,12 @@
 from __future__ import annotations
 
-import re
 from dataclasses import dataclass
 
+import regex
+
+from temporal_normalization.commons import clear_christum_notation, END_PLACEHOLDER, START_PLACEHOLDER
+from temporal_normalization.rules import REGEX_INTERVAL_DELIMITER
 from .time_period_model import TimePeriodModel
-from temporal_normalization.commons import clear_christum_notation, END_PLACEHOLDER, START_PLACEHOLDER, sanitize_time_period
-from temporal_normalization.rules import CASE_INSENSITIVE, REGEX_INTERVAL_PREFIX, REGEX_INTERVAL_CONJUNCTION, REGEX_INTERVAL_DELIMITER
-from temporal_normalization.rules.year import YEAR_INTERVAL_PREFIXED, YEAR_OR_SEPARATOR
 
 
 @dataclass
@@ -18,19 +18,19 @@ class YearModel(TimePeriodModel):
     # Used to separate the minus sign from the dash separator "-2 - -14 p.chr"; "-2 p.chr - -14 p.chr"
     REGEX_AGE_SEPARATOR: str = r"(?<=[\wăâîşșţțĂÂÎŞȘŢȚ\W&&[^ -]])[ ]*-[ ]*"
 
-    def __init__(self, original: str = None, value: str = None, regex: str = None, historical_only: bool = False):
+    def __init__(self, original: str = None, value: str = None, regex_str: str = None, historical_only: bool = False):
         super().__init__()
 
-        if original is not None and value is not None and regex is not None:
-            self.set_year_model(original, value, regex, historical_only)
+        if original is not None and value is not None and regex_str is not None:
+            self.set_year_model(original, value, regex_str, historical_only)
 
     # =========================================================
     # setYearModel()
     # =========================================================
 
-    def set_year_model(self, original: str, value: str, regex: str, historical_only: bool):
-        prepared_value = self.prepare_value(value, regex)
-        interval_values = re.split(REGEX_INTERVAL_DELIMITER, prepared_value, flags=re.IGNORECASE)
+    def set_year_model(self, original: str, value: str, regex_str: str, historical_only: bool):
+        prepared_value = self.prepare_value(value, regex_str)
+        interval_values = regex.split(REGEX_INTERVAL_DELIMITER, prepared_value, flags=regex.IGNORECASE)
 
         if len(interval_values) == 2:
             self.set_era(original, interval_values[0], interval_values[1], True)
@@ -48,19 +48,6 @@ class YearModel(TimePeriodModel):
 
             self._set_date(original, year_value, END_PLACEHOLDER, historical_only)
             self._set_date(original, year_value, START_PLACEHOLDER, historical_only)
-
-    # =========================================================
-    # prepareValue()
-    # =========================================================
-
-    def prepare_value(self, value: str, regex: str) -> str:
-        if regex == YEAR_INTERVAL_PREFIXED:
-            prepared_value = re.sub(REGEX_INTERVAL_PREFIX, "", value, flags=re.IGNORECASE)
-            prepared_value = re.sub(REGEX_INTERVAL_CONJUNCTION, " - ", prepared_value, flags=re.IGNORECASE)
-            return sanitize_time_period(prepared_value.strip())
-
-        prepared_value = re.sub(YEAR_OR_SEPARATOR, " - ", value, flags=re.IGNORECASE)
-        return sanitize_time_period(prepared_value.strip())
 
     # =========================================================
     # setDate()

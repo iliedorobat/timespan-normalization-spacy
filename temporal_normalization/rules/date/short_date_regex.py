@@ -1,6 +1,5 @@
 from temporal_normalization.rules.timespan_regex import (
     AD_BC_OPTIONAL,
-    CASE_INSENSITIVE,
     MONTHS,
     REGEX_INTERVAL_DELIMITER,
     REGEX_OR,
@@ -24,9 +23,8 @@ YEAR_INTERVAL = r"\s*[\(\[]?\d+[\)\]]?\s*"
 
 
 DATE_MY_INTERVAL = (
-        CASE_INSENSITIVE
         # Avoid match intervals consisting only of years (E.g.: "1789 - 1797")
-        + rf"^(?!{YEAR_INTERVAL}{REGEX_INTERVAL_DELIMITER}{YEAR_INTERVAL}$).*"
+        rf"^(?!{YEAR_INTERVAL}{REGEX_INTERVAL_DELIMITER}{YEAR_INTERVAL}$).*"
         + TEXT_START
 
         # E.g.: noiembrie 1784 - aprilie 1785
@@ -58,12 +56,9 @@ DATE_MY_INTERVAL = (
 
 
 DATE_MY_OPTIONS = (
-        CASE_INSENSITIVE
-        + "("
-        + TEXT_START
+        TEXT_START
         + "(" + MONTHS + r"\s+\d{3,}" + AD_BC_OPTIONAL + ")"
         + TEXT_END
-        + ")"
 )
 
 
