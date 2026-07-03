@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="temporal_normalization_spacy",
-    version="2.2.1",
+    version="2.2.2",
     author="Ilie Cristian Dorobat",
     description="A spaCy plugin for temporal normalization and extraction of "
     "historical dates in Romanian narrative texts.",
@@ -14,7 +14,7 @@ setup(
     include_package_data=True,
     entry_points={
         "spacy_factories": [
-            "temporal_normalization=temporal_normalization_spacy.factory:create_component",
+            "temporal_normalization=temporal_normalization.factory:create_component",
         ],
     },
     package_data={

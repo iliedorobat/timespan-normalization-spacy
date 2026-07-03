@@ -18,16 +18,6 @@ from temporal_normalization.commons.temporal_models import (
 )
 from temporal_normalization.process.java_process import start_conn, close_conn
 
-try:
-
-    @Language.factory("temporal_normalization")
-    def create_normalized_component(nlp, name):
-        return TemporalNormalization(nlp, name)
-
-except AttributeError:
-    # spaCy 2.x
-    pass
-
 
 class TemporalNormalization:
     """
