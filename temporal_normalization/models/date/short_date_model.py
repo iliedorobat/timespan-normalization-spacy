@@ -4,13 +4,12 @@ from dataclasses import dataclass
 
 import regex
 
-from temporal_normalization.commons import (
-    clear_christum_notation,
+from temporal_normalization.commons_temporal import (
     END_PLACEHOLDER,
     MY_PLACEHOLDER,
     START_PLACEHOLDER,
 )
-from temporal_normalization.commons_temporal.date_utils import Date
+from temporal_normalization.commons_temporal.date_utils import get_atomic_values, get_month_name
 from temporal_normalization.models.time_period_model import TimePeriodModel
 from temporal_normalization.rules import REGEX_INTERVAL_DELIMITER
 
@@ -29,7 +28,17 @@ class ShortDateModel(TimePeriodModel):
         self._set_date_model(original, value, order, historical_only)
 
     def _set_date_model(self, original: str, value: str, order: str, historical_only: bool):
-        interval_values = regex.split(REGEX_INTERVAL_DELIMITER, value, flags=regex.IGNORECASE)
+        # Filter out empty values by applying regex.split method
+        # E.g.: value = '-iunie 2013'
+        interval_values = [
+            item.strip()
+            for item in regex.split(
+                REGEX_INTERVAL_DELIMITER,
+                value or "",
+                flags=regex.IGNORECASE,
+            )
+            if item and item.strip()
+        ]
 
         if len(interval_values) == 2:
             self.set_era(original, interval_values[0], interval_values[1], True)
@@ -43,14 +52,15 @@ class ShortDateModel(TimePeriodModel):
             self._set_date(original, start_year, start_month, order, START_PLACEHOLDER, historical_only)
 
         else:
-            self.set_era(original, value, value, True)
+            target_value = interval_values[0] if len(interval_values) == 1 else value
+            self.set_era(original, target_value, target_value, True)
 
-            end_month = self._get_month(value)
-            end_year = self._get_year(value, value, order, END_PLACEHOLDER)
+            end_month = self._get_month(target_value)
+            end_year = self._get_year(target_value, target_value, order, END_PLACEHOLDER)
             self._set_date(original, end_year, end_month, order, END_PLACEHOLDER, historical_only)
 
-            start_month = self._get_month(value)
-            start_year = self._get_year(value, value, order, START_PLACEHOLDER)
+            start_month = self._get_month(target_value)
+            start_year = self._get_year(target_value, target_value, order, START_PLACEHOLDER)
             self._set_date(original, start_year, start_month, order, START_PLACEHOLDER, historical_only)
 
     def _set_date(
@@ -69,8 +79,8 @@ class ShortDateModel(TimePeriodModel):
             self.set_month(original, month, position, historical_only)
 
     def _get_year(self, start_date: str, end_date: str, order: str, position: str):
-        start_values = Date.get_atomic_values(start_date, True)
-        end_values = Date.get_atomic_values(end_date, True)
+        start_values = get_atomic_values(start_date, True)
+        end_values = get_atomic_values(end_date, True)
 
         if order == MY_PLACEHOLDER:
 
@@ -103,5 +113,5 @@ class ShortDateModel(TimePeriodModel):
         return None
 
     def _get_month(self, date: str):
-        values = Date.get_atomic_values(date)
-        return Date.get_month_name(values[0].strip())
+        values = get_atomic_values(date)
+        return get_month_name(values[0].strip())

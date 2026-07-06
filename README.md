@@ -75,7 +75,7 @@ import subprocess
 
 import spacy
 
-from temporal_normalization.commons.print_utils import console
+from temporal_normalization.commons import console
 
 LANG = "ro"
 MODEL = "ro_core_news_sm"
@@ -113,10 +113,11 @@ print()
 ```
 
 ### Accessing the Parsed Temporal Expressions
+
 ```python
 # Display information about the identified and normalized dates in the text.
 for entity in doc.ents:
-    time_series = entity._.time_series
+    time_series = entity._.timespan_models
 
     if isinstance(time_series, list):
         for ts in time_series:
@@ -163,6 +164,8 @@ TEXT_RO = (
 ```
 
 ### Parsing the Content
+
+[//]: # TODO: Update(remove java example)
 ```python
 # Display a warning if the language of the text is not Romanian.
 console.lang_warning(TEXT_RO, target_lang=LANG)
@@ -174,10 +177,11 @@ close_conn(java_process, gateway)
 ```
 
 ### Accessing the Parsed Temporal Expressions
+
 ```python
 # Display information about the identified and normalized dates in the text.
 for expression in expressions:
-    for time_series in expression.time_series:
+    for time_series in expression.timespan_models:
         edges = time_series.edges
 
         print("Start Edge:")

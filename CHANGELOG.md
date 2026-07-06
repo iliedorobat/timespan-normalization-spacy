@@ -3,6 +3,10 @@ All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 ---
 
+## 3.0.0
+### Changed
+- Removed the dependency of Java
+
 ## 2.2.2
 ### Changed
 - Fixed the factory

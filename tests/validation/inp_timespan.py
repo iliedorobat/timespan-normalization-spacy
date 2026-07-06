@@ -1,7 +1,7 @@
 import os
 from pathlib import Path
 
-from temporal_normalization import TimeSeries
+from temporal_normalization.time_expression import TimeSeries
 
 
 class InpInputFile:
@@ -73,8 +73,11 @@ class InpOutputFile:
         ) as csv_file:
             entry = "|".join(
                 [
-                    time_series.input_value,
-                    time_series.prepared_value,
+                    # FIXME: pass input_value & prepared_value
+                    # time_series.input_value,
+                    # time_series.prepared_value,
+                    "input_value",
+                    "prepared_value",
                     f"[{{start={time_series.edges.start.uri}, end={time_series.edges.end.uri}}}]",
                     _list_to_string([period.uri for period in time_series.periods]),
                 ]

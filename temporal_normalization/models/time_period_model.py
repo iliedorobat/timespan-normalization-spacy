@@ -5,28 +5,24 @@ from typing import Optional, Set
 
 import regex
 
-from temporal_normalization.commons import (
+from temporal_normalization.commons_temporal import (
     CHRISTUM_AD_PLACEHOLDER,
     CHRISTUM_BC_LABEL,
     CHRISTUM_BC_PLACEHOLDER,
-    get_ordinal,
-)
-from temporal_normalization.commons_temporal.constants import (
     DBPEDIA_MILLENNIUM_PLACEHOLDER,
     DBPEDIA_CENTURY_PLACEHOLDER,
+    get_ordinal,
+    TemporalType,
     UNDERSCORE_PLACEHOLDER,
 )
-from temporal_normalization.commons_temporal.timespan_types import (
-    CENTURY_TYPE,
-    DATE_TYPE,
-    MILLENNIUM_TYPE,
-    YEAR_TYPE,
+from temporal_normalization.commons_temporal.time_period_utils import (
+    sanitize_time_period_interval,
+    sanitize_time_period,
 )
-from .dbpedia_model import DBpediaModel
-from .time_model import TimeModel
-from ..commons_temporal.time_period_utils import sanitize_time_period_interval, sanitize_time_period
-from ..rules import CENTURY_INTERVAL_PREFIXED, MILLENNIUM_INTERVAL_PREFIXED
-from ..rules.year import YEAR_OR_SEPARATOR, YEAR_INTERVAL_PREFIXED
+from temporal_normalization.models.dbpedia_model import DBpediaModel
+from temporal_normalization.models.time_model import TimeModel
+from temporal_normalization.rules import CENTURY_INTERVAL_PREFIXED, MILLENNIUM_INTERVAL_PREFIXED
+from temporal_normalization.rules.year import YEAR_OR_SEPARATOR, YEAR_INTERVAL_PREFIXED
 
 INTERVAL_PREFIXES = [
     CENTURY_INTERVAL_PREFIXED,
@@ -92,13 +88,13 @@ class TimePeriodModel(TimeModel):
         if matched_type is None:
             return None
 
-        if matched_type == CENTURY_TYPE:
+        if matched_type == TemporalType.CENTURY.value:
             return DBpediaModel.prepare_uri(self.era_start, self.century_start, matched_type)
 
-        if matched_type == MILLENNIUM_TYPE:
+        if matched_type == TemporalType.MILLENNIUM.value:
             return DBpediaModel.prepare_uri(self.era_start, self.millennium_start, matched_type)
 
-        if matched_type in (DATE_TYPE, YEAR_TYPE):
+        if matched_type in (TemporalType.DATE.value, TemporalType.YEAR.value):
             return DBpediaModel.prepare_uri(self.era_start, self.year_start, matched_type)
 
         return None
@@ -107,13 +103,13 @@ class TimePeriodModel(TimeModel):
         if matched_type is None:
             return None
 
-        if matched_type == CENTURY_TYPE:
+        if matched_type == TemporalType.CENTURY.value:
             return DBpediaModel.prepare_uri(self.era_end, self.century_end, matched_type)
 
-        if matched_type == MILLENNIUM_TYPE:
+        if matched_type == TemporalType.MILLENNIUM.value:
             return DBpediaModel.prepare_uri(self.era_end, self.millennium_end, matched_type)
 
-        if matched_type in (DATE_TYPE, YEAR_TYPE):
+        if matched_type in (TemporalType.DATE.value, TemporalType.YEAR.value):
             return DBpediaModel.prepare_uri(self.era_end, self.year_end, matched_type)
 
         return None

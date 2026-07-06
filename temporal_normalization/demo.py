@@ -1,4 +1,6 @@
-from temporal_normalization.time_expression import TimeExpression
+import json
+
+from temporal_normalization.time_expression import TimeExpression, TemporalExpression, extract_temporal_expressions
 
 
 # PATH_OUTPUT_ALL_TIMESPAN_FILE = (
@@ -18,7 +20,10 @@ def main(args: list[str]) -> None:
         sanitize_values,
     )
 
-    print(time_expression.serialize())
+    # json_obj = json.loads(time_expression.serialize())
+    expressions = extract_temporal_expressions(time_expression)
+
+    print(time_expression.serialize(), time_expression)
 
 
 # TODO: implement the analytics

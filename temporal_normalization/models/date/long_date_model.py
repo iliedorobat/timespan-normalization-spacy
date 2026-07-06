@@ -2,13 +2,13 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from temporal_normalization.commons import (
+from temporal_normalization.commons_temporal import (
     century_to_millennium,
     clear_christum_notation,
     EMPTY_VALUE_PLACEHOLDER,
     get_era_name,
 )
-from temporal_normalization.commons_temporal.date_utils import Date
+from temporal_normalization.commons_temporal.date_utils import get_month_name
 from temporal_normalization.models.time_period_model import TimePeriodModel
 from temporal_normalization.rules.date import DATE_SEPARATOR
 
@@ -106,7 +106,7 @@ class LongDateModel(TimePeriodModel):
             .strip()
         )
 
-        month = Date.get_month_name(month_str)
+        month = get_month_name(month_str)
         self.month_start = month
         self.month_end = month
 

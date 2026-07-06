@@ -4,9 +4,9 @@ from dataclasses import dataclass
 
 import regex
 
-from temporal_normalization.commons import clear_christum_notation, END_PLACEHOLDER, START_PLACEHOLDER
+from temporal_normalization.commons_temporal import clear_christum_notation, END_PLACEHOLDER, START_PLACEHOLDER
+from temporal_normalization.models.time_period_model import TimePeriodModel
 from temporal_normalization.rules import REGEX_INTERVAL_DELIMITER
-from .time_period_model import TimePeriodModel
 
 
 @dataclass

@@ -4,14 +4,14 @@ from dataclasses import dataclass
 
 import regex
 
-from temporal_normalization.commons import (
+from temporal_normalization.commons_temporal import (
     clear_christum_notation,
     DMY_PLACEHOLDER,
     END_PLACEHOLDER,
     START_PLACEHOLDER,
     YMD_PLACEHOLDER,
 )
-from temporal_normalization.commons_temporal.date_utils import Date
+from temporal_normalization.commons_temporal.date_utils import get_atomic_values, get_month_name
 from temporal_normalization.models.time_period_model import TimePeriodModel
 from temporal_normalization.rules import REGEX_INTERVAL_DELIMITER
 
@@ -123,7 +123,7 @@ class DateModel(TimePeriodModel):
 
     @staticmethod
     def _get_year(main_date: str, second_date: str, order: str):
-        values = Date.get_atomic_values(main_date)
+        values = get_atomic_values(main_date)
 
         try:
             # values.length == 4 if the month name is abbreviated (E.g.: "aug.")
@@ -144,16 +144,16 @@ class DateModel(TimePeriodModel):
 
     @staticmethod
     def _get_month(main_date: str, second_date: str, order: str):
-        values = Date.get_atomic_values(main_date)
+        values = get_atomic_values(main_date)
 
         if order in (DMY_PLACEHOLDER, YMD_PLACEHOLDER):
             try:
-                return Date.get_month_name(values[1].strip())
+                return get_month_name(values[1].strip())
 
             except IndexError:
                 # E.g.: 19-26 noiembrie 2010
-                second_values = Date.get_atomic_values(second_date)
-                return Date.get_month_name(second_values[1].strip())
+                second_values = get_atomic_values(second_date)
+                return get_month_name(second_values[1].strip())
 
             except Exception as e:
                 print(e)
@@ -163,7 +163,7 @@ class DateModel(TimePeriodModel):
 
     @staticmethod
     def _get_day(main_date: str, second_date: str, order: str):
-        values = Date.get_atomic_values(main_date)
+        values = get_atomic_values(main_date)
 
         if order == DMY_PLACEHOLDER:
             return values[0]

@@ -3,37 +3,57 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Optional
 
-from temporal_normalization.commons import CHRISTUM_BC_LABEL, CHRISTUM_BC_PLACEHOLDER, get_ordinal
-from temporal_normalization.commons_temporal.constants import (
+from temporal_normalization.commons_temporal import (
+    CHRISTUM_BC_LABEL,
+    CHRISTUM_BC_PLACEHOLDER,
     DBPEDIA_CENTURY_PLACEHOLDER,
     DBPEDIA_MILLENNIUM_PLACEHOLDER,
-    UNDERSCORE_PLACEHOLDER,
+    get_ordinal,
     NS_DBPEDIA_RESOURCE,
     STRING_LIST_SEPARATOR,
+    TemporalType,
+    UNDERSCORE_PLACEHOLDER,
 )
-from temporal_normalization.commons_temporal.timespan_types import CENTURY_TYPE, MILLENNIUM_TYPE, DATE_TYPE, YEAR_TYPE
 
 
 @dataclass
 class DBpediaModel:
-    uri: Optional[str] = None
+    """
+    A model representing an entity from DBpedia, storing key attributes related
+    to the entity.
+
+    Attributes:
+        uri (str): The unique identifier (URI) of the DBpedia entity.
+        matched_value (str): The original matched value from the input data.
+        matched_type (TemporalType or None): The temporal type of the entity,
+            if applicable.
+        label (str): A human-readable name for the entity.
+    """
+
+    uri: str = None
+    matched_type: TemporalType = None
+    matched_value: str = None
     label: Optional[str] = None
-    matched_value: Optional[str] = None
-    matched_type: Optional[str] = None
 
-    # =========================================================
-    # Equivalent of Java constructor logic
-    # =========================================================
-    def __post_init__(self):
-        if self.uri is not None:
-            self.label = (
-                self.uri.replace(NS_DBPEDIA_RESOURCE, "")
-                .replace(UNDERSCORE_PLACEHOLDER, " ")
-            )
+    def __init__(self, uri: str, matched_type: str, matched_value: str):
+        self.uri = uri
+        self.matched_type = TemporalType(matched_type)
+        self.matched_value = matched_value
+        self.label = (uri.replace(NS_DBPEDIA_RESOURCE, "")
+                      .replace(UNDERSCORE_PLACEHOLDER, " "))
 
-    # =========================================================
-    # prepareUri()
-    # =========================================================
+    def __repr__(self):
+        return f"DBpediaModel(label={self.label}, uri={self.uri})"
+
+    def serialize(self, indent: str = ""):
+        matched_type = self.matched_type.value if self.matched_type else None
+
+        return (
+            f"{indent}Matched value: {self.matched_value}\n"
+            f"{indent}Matched Type: {matched_type}\n"
+            f"{indent}Normalized label: {self.label}\n"
+            f"{indent}DBpedia uri: {self.uri}"
+        )
 
     @staticmethod
     def prepare_uri(era: str, value: Optional[int], matched_type: str) -> Optional[str]:
@@ -46,7 +66,7 @@ class DBpediaModel:
         if value is None:
             return None
 
-        if matched_type == CENTURY_TYPE:
+        if matched_type == TemporalType.CENTURY.value:
             return (
                     NS_DBPEDIA_RESOURCE
                     + get_ordinal(value).ordinal
@@ -54,7 +74,7 @@ class DBpediaModel:
                     + DBpediaModel._get_era_suffix(era)
             )
 
-        if matched_type == MILLENNIUM_TYPE:
+        if matched_type == TemporalType.MILLENNIUM.value:
             return (
                     NS_DBPEDIA_RESOURCE
                     + get_ordinal(value).ordinal
@@ -62,7 +82,7 @@ class DBpediaModel:
                     + DBpediaModel._get_era_suffix(era)
             )
 
-        if matched_type in (DATE_TYPE, YEAR_TYPE):
+        if matched_type in (TemporalType.DATE.value, TemporalType.YEAR.value):
             return (
                     NS_DBPEDIA_RESOURCE
                     + str(value)
@@ -78,10 +98,19 @@ class DBpediaModel:
             for item in sorted(tree_set)
         )
 
+    @staticmethod
+    def _get_era_suffix(value: str) -> str:
+        return (
+            UNDERSCORE_PLACEHOLDER + CHRISTUM_BC_LABEL
+            if value and CHRISTUM_BC_PLACEHOLDER in value
+            else ""
+        )
+
     # =========================================================
     # Python dunder methods
     # =========================================================
 
+    # TODO: check whether dunder methods are necessary
     def __str__(self) -> str:
         return self.uri
 
@@ -96,15 +125,3 @@ class DBpediaModel:
 
     def __hash__(self) -> int:
         return hash(self.uri) + hash(self.matched_value)
-
-    # =========================================================
-    # Era suffix helper
-    # =========================================================
-
-    @staticmethod
-    def _get_era_suffix(value: str) -> str:
-        return (
-            UNDERSCORE_PLACEHOLDER + CHRISTUM_BC_LABEL
-            if value and CHRISTUM_BC_PLACEHOLDER in value
-            else ""
-        )

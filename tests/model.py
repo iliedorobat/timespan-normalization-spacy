@@ -1,11 +1,8 @@
-import subprocess
-import sys
-
 import spacy
 from spacy import Language
 from spacy.cli import download
 
-from temporal_normalization import console
+from temporal_normalization.commons import console
 
 
 def load_model(model_name: str) -> Language:

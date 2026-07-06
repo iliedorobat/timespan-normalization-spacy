@@ -3,19 +3,21 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Optional
 
-from temporal_normalization.commons import (
+from temporal_normalization.commons_temporal import (
     CHRISTUM_AD_PLACEHOLDER,
     CHRISTUM_BC_PLACEHOLDER,
     century_to_millennium,
     clear_date,
     END_PLACEHOLDER,
     get_era_name,
+    LAST_UPDATE_YEAR,
+    LAST_UPDATE_MILLENNIUM,
+    LAST_UPDATE_CENTURY,
+    PRINT_ERROR,
     START_PLACEHOLDER,
     time_period_to_number,
     year_to_millennium,
 )
-from temporal_normalization.commons_temporal.constants import PRINT_ERROR
-from temporal_normalization.commons_temporal.date_constants import LAST_UPDATE_YEAR, LAST_UPDATE_MILLENNIUM, LAST_UPDATE_CENTURY
 from temporal_normalization.errors.too_big_date import (
     TooBigCenturyError,
     TooBigMillenniumError,

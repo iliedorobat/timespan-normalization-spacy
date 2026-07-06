@@ -1,9 +1,9 @@
 from datasets import load_dataset
 
-from inp_timespan import InpInputFile, InpOutputFile
-from tests.validation.ronec_mock_data import ronec_example
 from tests.model import load_model
-from ronec_timespan import Ronec, RonecOutputFile
+from tests.validation.inp_timespan import InpInputFile, InpOutputFile
+from tests.validation.ronec_mock_data import ronec_example
+from tests.validation.ronec_timespan import Ronec, RonecOutputFile
 
 MODEL = "ro_core_news_sm"
 

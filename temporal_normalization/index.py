@@ -1,36 +1,31 @@
 import gc
 import re
-import subprocess
 import time
-from pathlib import Path
 
-from py4j.java_gateway import JavaGateway
-from py4j.protocol import Py4JNetworkError
 from spacy import Language
-from spacy.tokens import Doc, Span
+from spacy.tokens import Span, Doc
 from spacy.tokens._retokenize import Retokenizer
 from spacy.util import filter_spans
 
-from temporal_normalization import TimeSeries
-from temporal_normalization.commons.temporal_models import (
+from temporal_normalization.time_expression import (
     extract_temporal_expressions,
     TemporalExpression,
+    TimeExpression,
+    TimeSeries
 )
-from temporal_normalization.process.java_process import start_conn, close_conn
 
 
 class TemporalNormalization:
     """
     spaCy pipeline component for identifying and annotating temporal expressions in text.
 
-    This component calls the ``start_conn`` method to extract temporal expressions, then
-    aligns the matches with spaCy tokens using retokenization and sets a custom attribute
-    containing associated time series metadata.
+    This component extracts temporal expressions, then aligns the matches with spaCy tokens
+    using retokenization and sets a custom attribute containing associated time series metadata.
     """
 
     __FIELD = "time_series"
 
-    def __init__(self, nlp: Language, name: str):
+    def __init__(self, nlp: Language, name: str) -> None:
         """
         Initialize the component and register a custom extension on spaCy spans.
 
@@ -42,11 +37,6 @@ class TemporalNormalization:
         Span.set_extension(TemporalNormalization.__FIELD, default=None, force=True)
         self.nlp = nlp
         self.count = 0
-
-        root_path = str(Path(__file__).resolve().parent.parent)
-        java_process, gateway = start_conn(root_path)
-        self.java_process: subprocess.Popen = java_process
-        self.gateway: JavaGateway = gateway
 
     def __call__(self, doc: Doc) -> Doc:
         """
@@ -71,33 +61,15 @@ class TemporalNormalization:
             time.sleep(0.01)
 
         try:
-            expressions: list[TemporalExpression] = extract_temporal_expressions(
-                self.gateway, doc.text
-            )
+            time_expression = TimeExpression(doc.text)
+            expressions: list[TemporalExpression] = extract_temporal_expressions(time_expression)
             str_matches: list[str] = _prepare_str_patterns(expressions)
             _retokenize(doc, str_matches, expressions)
-        except Py4JNetworkError as e:
-            print(f"⚠️ Py4J network error: {e}")
         except Exception as e:
-            print(f"⚠️ Unexpected error during extract_temporal_expressions: {e}")
+            print(f"⚠️ Unexpected error during extract_temporal_expressions: {e}.\n"
+                  f"\tTarget text = {doc.text}")
 
         return doc
-
-    def __del__(self):
-        """
-        Clean up resources when the TemporalNormalization component is destroyed.
-
-        This method is automatically called by Python's garbage collector when the
-        `TemporalNormalization` instance is about to be deleted. It ensures that the
-        external Java process and the Py4J gateway connection used for temporal
-        expression extraction are properly closed.
-
-        By explicitly terminating the Java subprocess and shutting down the gateway,
-        the method prevents resource leaks such as orphaned Java processes or open
-        network sockets that might otherwise persist after the Python process ends.
-        """
-
-        close_conn(self.java_process, self.gateway)
 
 
 def _prepare_str_patterns(expressions: list[TemporalExpression]) -> list[str]:
@@ -121,7 +93,7 @@ def _prepare_str_patterns(expressions: list[TemporalExpression]) -> list[str]:
 
 
 def _retokenize(
-    doc: Doc, str_matches: list[str], expressions: list[TemporalExpression]
+        doc: Doc, str_matches: list[str], expressions: list[TemporalExpression]
 ) -> None:
     """
     Retokenizes the doc to align with matched temporal expressions and attaches
@@ -186,12 +158,12 @@ def _retokenize(
 
 
 def _retokenize_entity(
-    doc: Doc,
-    matched_ts: list[TimeSeries],
-    entity: Span,
-    existed_entity: bool,
-    retokenized_entities: list[Span],
-    retokenizer: Retokenizer,
+        doc: Doc,
+        matched_ts: list[TimeSeries],
+        entity: Span,
+        existed_entity: bool,
+        retokenized_entities: list[Span],
+        retokenizer: Retokenizer,
 ) -> None:
     """
     Retokenizes and enriches a temporal entity span with matched time series data.
@@ -217,7 +189,7 @@ def _retokenize_entity(
 
 
 def _assign_time_series(
-    matched_ts: list[TimeSeries], entity: Span, existed_entity: bool
+        matched_ts: list[TimeSeries], entity: Span, existed_entity: bool
 ) -> None:
     """
     Attaches matched TimeSeries to a given entity.
@@ -253,10 +225,10 @@ def _update_doc_ents(doc: Doc, entity: Span) -> None:
 
 
 def _merge_entity(
-    doc: Doc,
-    entity: Span,
-    retokenized_entities: list[Span],
-    retokenizer: Retokenizer,
+        doc: Doc,
+        entity: Span,
+        retokenized_entities: list[Span],
+        retokenizer: Retokenizer,
 ) -> None:
     """
     Merges a custom entity span into the spaCy Doc if it is not already part of
@@ -315,7 +287,7 @@ def _is_substring(text: str, matches: list[str]) -> bool:
 
 
 def _create_span(
-    doc: Doc, start_char: int, end_char: int, start_token: int, end_token: int
+        doc: Doc, start_char: int, end_char: int, start_token: int, end_token: int
 ) -> tuple[Span, bool]:
     """
     Creates a new span for a temporal expression or returns an existing overlapping entity.

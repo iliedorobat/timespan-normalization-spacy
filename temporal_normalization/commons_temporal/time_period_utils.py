@@ -3,13 +3,13 @@ from typing import List, Optional, Set
 
 import regex
 
-from temporal_normalization.commons import (
+from temporal_normalization.commons_temporal import (
     CHRISTUM_AD_PLACEHOLDER,
     clear_christum_notation,
     clear_date,
+    EMPTY_VALUE_PLACEHOLDER,
     roman_to_int,
 )
-from temporal_normalization.commons_temporal.constants import EMPTY_VALUE_PLACEHOLDER
 from temporal_normalization.rules import (
     AGES_GROUP_SUFFIX,
     ARTICLE_AL,

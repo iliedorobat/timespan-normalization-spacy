@@ -1,10 +1,11 @@
 from datetime import datetime
+from enum import Enum
 
 from langdetect import detect
 
 
 # https://godoc.org/github.com/whitedevops/colors
-class COLORS:
+class COLORS(Enum):
     BLUE = "\033[34m"
     CYAN = "\033[36m"
     LIGHT_CYAN = "\033[96m"
@@ -17,13 +18,13 @@ class COLORS:
 # https://stackoverflow.com/questions/287871/how-to-print-colored-text-in-python#answer-287944
 class console:
     @staticmethod
-    def display(message: str, color: str, alert: str, show_time: bool = True):
+    def display(message: str, color: COLORS, alert: str, show_time: bool = True):
         if show_time:
             print(
-                f"{color}{datetime.now().replace(microsecond=0)} {alert}: {message}{COLORS.RESET_ALL}"  # noqa 501
+                f"{color.value}{datetime.now().replace(microsecond=0)} {alert}: {message}{COLORS.RESET_ALL}"  # noqa 501
             )
         else:
-            print(f"{color}{message}{COLORS.RESET_ALL}")
+            print(f"{color.value}{message}{COLORS.RESET_ALL}")
 
     @staticmethod
     def debug(message: str, show_time: bool = True):

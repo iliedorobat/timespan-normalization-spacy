@@ -5,7 +5,8 @@ from pathlib import Path
 from datasets import DatasetDict, Dataset
 from spacy.tokens import Span, Doc
 
-from temporal_normalization import console, TimeSeries
+from temporal_normalization.commons import console
+from temporal_normalization.time_expression import TimeSeries
 
 EMPTY_SPACE = " "
 

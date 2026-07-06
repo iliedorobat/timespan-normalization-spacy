@@ -17,9 +17,6 @@ setup(
             "temporal_normalization=temporal_normalization.factory:create_component",
         ],
     },
-    package_data={
-        "temporal_normalization.libs": ["temporal-normalization-2.1.0.jar"],
-    },
     install_requires=[
         "spacy>=3.8.7,<4.0.0",
         "py4j>=0.10.9.9",

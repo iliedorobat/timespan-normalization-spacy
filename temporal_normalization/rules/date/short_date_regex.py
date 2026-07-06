@@ -55,10 +55,16 @@ DATE_MY_INTERVAL = (
 )
 
 
+# TODO: check if this is still needed
+# DATE_MY_OPTIONS = (
+#         TEXT_START
+#         + "(" + MONTHS + r"\s+\d{3,}" + AD_BC_OPTIONAL + ")"
+#         + TEXT_END
+# )
 DATE_MY_OPTIONS = (
-        TEXT_START
+        r"(?<!\w)"
         + "(" + MONTHS + r"\s+\d{3,}" + AD_BC_OPTIONAL + ")"
-        + TEXT_END
+        + r"(?!\w)"
 )
 
 

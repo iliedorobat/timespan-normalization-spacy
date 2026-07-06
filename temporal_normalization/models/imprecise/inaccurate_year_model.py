@@ -4,7 +4,7 @@ from dataclasses import dataclass
 
 import regex
 
-from temporal_normalization.commons import (
+from temporal_normalization.commons_temporal import (
     clear_christum_notation,
     EMPTY_VALUE_PLACEHOLDER,
     END_PLACEHOLDER,

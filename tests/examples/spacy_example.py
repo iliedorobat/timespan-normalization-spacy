@@ -4,9 +4,7 @@ from tests.model import load_model
 LANG = "ro"
 MODEL = "ro_core_news_sm"
 TEXT_RO = (
-    "Sec al II-lea a.ch. a fost o perioadă de mari schimbări. "
-    "În secolul XX, tehnologia a avansat semnificativ. "
-    "Sec. 21 este adesea asociat cu globalizarea rapidă."
+    "281 a.chr. - cca 200 a.chr."
 )
 
 if __name__ == "__main__":

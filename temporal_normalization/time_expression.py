@@ -4,10 +4,10 @@ import json
 from dataclasses import dataclass, field, asdict
 from typing import Dict, List, Set
 
-from temporal_normalization.commons import normalize_christum_notation
+from temporal_normalization.commons_temporal import normalize_christum_notation
 from temporal_normalization.commons_temporal.time_sanitize_utils import sanitize_value
-from temporal_normalization.commons_temporal.timespan_utiles import prepare_timespan_models
-from temporal_normalization.models import TimespanModel, DBpediaModel
+from temporal_normalization.commons_temporal.timespan_utils import prepare_timespan_models
+from temporal_normalization.models import TimespanModel, DBpediaModel, EdgeModel
 
 
 # FIXME:
@@ -117,3 +117,98 @@ class TimeExpression:
             items.update(timespan_model.get_dbpedia_items())
 
         return items
+
+
+class TemporalExpression:
+    """
+    A model representing a temporal expression, extracted and processed.
+
+    Attributes:
+        is_valid (bool): A flag that specifies whether the text processed
+            through timespan-normalization library is a temporal expression.
+        input_value (str or None): The original temporal expression before processing.
+        prepared_value (str or None): The temporal expression after processing.
+        time_series (list[TimeSeries]): The list of normalized temporal expressions.
+        matches (list[str]): A unique list of matched values found in the normalized
+            entities.
+    """
+
+    def __init__(self, time_expression: TimeExpression):
+        # TODO: remove is_valid flag (used for the validating deserialized Java objects)
+        self.is_valid = time_expression.input_value is not None and isinstance(time_expression.timespan_models, list)
+        self.input_value = time_expression.input_value
+        self.prepared_value = time_expression.prepared_value
+        self.time_series: list[TimeSeries] = [
+            TimeSeries(item) for item in time_expression.timespan_models
+        ] if self.is_valid else []
+        self.matches: list[str] = list(
+            set(
+                [
+                    matched_value
+                    for ts in self.time_series
+                    for matched_value in ts.matches
+                ]
+            )
+        )
+
+    def __str__(self):
+        if self.input_value is None:
+            return "TemporalExpression(None)"
+
+        return f"TemporalExpression({self.input_value})"
+
+    def __repr__(self):
+        return self.input_value
+
+
+class TimeSeries:
+    """
+    A data structure representing a temporal expression that has been normalized
+    into a list of periods and temporal edges.
+
+    Attributes:
+        edges (list[EdgeModel]): A list of temporal intervals represented as edges.
+        periods (list[DBpediaModel]): A list of normalized DBpedia entities
+            extracted from the expression.
+        matches (list[str]): A unique list of matched values found in the normalized
+            entities.
+    """
+
+    def __init__(self, timespan: TimespanModel):
+        self.edges: EdgeModel = timespan.edges
+        self.periods: set[DBpediaModel] = timespan.periods
+        self.matches: list[str] = list(
+            set([item.matched_value for item in self.periods])
+        )
+
+    def __repr__(self):
+        return f"TimeSeries(edges={self.edges}, periods={self.periods})"
+
+    def serialize(self, indent: str = ""):
+        # fmt: off
+        return (
+            f"{indent}Edges: {self.edges}\n"
+            f"{indent}Periods: {self.periods}"
+        )
+        # fmt: on
+
+
+def extract_temporal_expressions(time_expression: TimeExpression):
+    """
+    Extracts valid temporal expressions from the given TimeExpression object.
+
+    Args:
+        time_expression (TimeExpression): Input from which to extract temporal
+            expressions.
+
+    Returns:
+        list[TemporalExpression]: A list containing valid temporal expressions.
+    """
+
+    expressions: list[TemporalExpression] = []
+    temporal_expression = TemporalExpression(time_expression)
+
+    if temporal_expression.is_valid:
+        expressions.append(temporal_expression)
+
+    return expressions

@@ -4,7 +4,7 @@ from dataclasses import dataclass
 
 import regex
 
-from temporal_normalization.commons import (
+from temporal_normalization.commons_temporal import (
     END_PLACEHOLDER,
     get_end_time,
     get_start_time,
@@ -14,7 +14,6 @@ from temporal_normalization.commons import (
 from temporal_normalization.models.time_period_model import TimePeriodModel
 from temporal_normalization.rules import (
     REGEX_INTERVAL_CONJUNCTION,
-    REGEX_INTERVAL_DELIMITER,
 )
 
 

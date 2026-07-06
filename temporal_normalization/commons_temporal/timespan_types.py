@@ -1,6 +1,0 @@
-CENTURY_TYPE = "century"
-DATE_TYPE = "date"
-EPOCH_TYPE = "epoch"
-MILLENNIUM_TYPE = "millennium"
-UNKNOWN_TYPE = "unknown"
-YEAR_TYPE = "year"

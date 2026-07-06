@@ -1,6 +1,6 @@
 import re
 
-from temporal_normalization.commons import EMPTY_VALUE_PLACEHOLDER
+from temporal_normalization.commons_temporal import EMPTY_VALUE_PLACEHOLDER
 from temporal_normalization.rules.year import YEAR_3_4_DIGITS_SPECIAL_INTERVAL, YEAR_3_4_DIGITS_SPECIAL_PREFIX
 
 
