@@ -103,8 +103,8 @@ def normalize_christum_notation(value: str) -> str:
     - AGE_BC → "__BC__"
     - AGE_AD → "__AD__"
     """
-    value = regex.sub(AGE_BC, CHRISTUM_BC_PLACEHOLDER, value)
-    value = regex.sub(AGE_AD, CHRISTUM_AD_PLACEHOLDER, value)
+    value = regex.sub(AGE_BC, CHRISTUM_BC_PLACEHOLDER, value, flags=regex.IGNORECASE)
+    value = regex.sub(AGE_AD, CHRISTUM_AD_PLACEHOLDER, value, flags=regex.IGNORECASE)
     return value
 
 

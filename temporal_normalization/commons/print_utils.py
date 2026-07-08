@@ -21,10 +21,10 @@ class console:
     def display(message: str, color: COLORS, alert: str, show_time: bool = True):
         if show_time:
             print(
-                f"{color.value}{datetime.now().replace(microsecond=0)} {alert}: {message}{COLORS.RESET_ALL}"  # noqa 501
+                f"{color.value}{datetime.now().replace(microsecond=0)} {alert}: {message}{COLORS.RESET_ALL.value}"  # noqa 501
             )
         else:
-            print(f"{color.value}{message}{COLORS.RESET_ALL}")
+            print(f"{color.value}{message}{COLORS.RESET_ALL.value}")
 
     @staticmethod
     def debug(message: str, show_time: bool = True):
