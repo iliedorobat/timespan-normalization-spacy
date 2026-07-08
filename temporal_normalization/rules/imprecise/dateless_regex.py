@@ -1,117 +1,56 @@
-from temporal_normalization.rules import UNKNOWN
+from temporal_normalization.rules import UNKNOWN_REGEXES
 from temporal_normalization.rules.timespan_regex import (
-    REGEX_OR,
     TEXT_START,
     TEXT_END,
-    CASE_INSENSITIVE,
 )
 from temporal_normalization.rules.year import UNKNOWN_YEARS
 
-# -------------------------
-# IMPLICIT DATELESS REGEXES
-# -------------------------
 
 """
 E.g.:
-<ul>
-    <li>"model 1850"</li>
-</ul>
+    - "f.a. octombrie 29"; "f.an"
 """
-MODEL_X = rf"({TEXT_START}model\s*\d{{4}}){TEXT_END}"
+WITHOUT_AGE = rf"(.*((fara\s*an)|(f\.\s*an)|(f\.a)))"
 
 
 """
 E.g.:
-<ul>
-    <li>"nedatat (1897)"</li>
-    <li>"1910 (nedatat)"</li>
-    <li>"nedatabil"</li>
-    <li>"nu are"</li>
-</ul>
+    - "fara data"
+    - "1861 f.d"
 """
-UNDATED = rf"(" \
-          rf".*(" \
-          rf"nedatat{REGEX_OR}" \
-          rf"nedatabil{REGEX_OR}" \
-          r"nu\s*are" \
-          rf").*" \
-          rf")"
+WITHOUT_DATE = rf"(((fara\s*data)|(f\.\s*data)|(f\.d))).*"
 
 
 """
 E.g.:
-<ul>
-    <li>"f.a. octombrie 29"; "f.an"</li>
-</ul>
+    - "f.a. octombrie 29"; "f.an"
+    - "fara data"
+    - "1861 f.d"
 """
-WITHOUT_AGE = rf"(" \
-              rf".*(" \
-              rf"(fara\s*an){REGEX_OR}" \
-              rf"(f\.\s*an){REGEX_OR}" \
-              r"(f\.a)" \
-              rf")" \
-              rf")"
+DATELESS = "(" + WITHOUT_AGE + "|" + WITHOUT_DATE + ")"
 
 
 """
 E.g.:
-<ul>
-    <li>"fara data"</li>
-    <li>"1861 f.d"</li>
-</ul>
+    - "model 1850"
 """
-WITHOUT_DATE = rf"(" \
-               rf"(" \
-               rf"(fara\s*data){REGEX_OR}" \
-               rf"(f\.\s*data){REGEX_OR}" \
-               r"(f\.d)" \
-               rf")" \
-               rf").*"
+DATELESS_MODEL_X = rf"({TEXT_START}model\s*\d{{4}}){TEXT_END}"
 
 
 """
 E.g.:
-<ul>
-    <li>"f.a. octombrie 29"; "f.an"</li>
-    <li>"fara data"</li>
-    <li>"1861 f.d"</li>
-</ul>
+    - "nedatat (1897)"
+    - "1910 (nedatat)"
+    - "nedatabil"
+    - "nu are"
 """
-DATELESS = (
-        CASE_INSENSITIVE
-        + "("
-        + WITHOUT_AGE
-        + REGEX_OR
-        + WITHOUT_DATE
-        + ")"
-)
+DATELESS_UNDATED = rf"(.*(nedatat|nedatabil|nu\s*are).*)"
 
 
-"""
-E.g.:
-<ul>
-    <li>"model 1850"</li>
-</ul>
-"""
-DATELESS_MODEL_X = CASE_INSENSITIVE + MODEL_X
-
-
-"""
-E.g.:
-<ul>
-    <li>"nedatat (1897)"</li>
-    <li>"1910 (nedatat)"</li>
-    <li>"nedatabil"</li>
-    <li>"nu are"</li>
-</ul>
-"""
-DATELESS_UNDATED = CASE_INSENSITIVE + UNDATED
-
-
-DATELESS_REGEXES = {
+DATELESS_REGEXES = [
     DATELESS,
     DATELESS_MODEL_X,
     DATELESS_UNDATED,
     UNKNOWN_YEARS,
-    UNKNOWN,
-}
+    UNKNOWN_REGEXES,
+]

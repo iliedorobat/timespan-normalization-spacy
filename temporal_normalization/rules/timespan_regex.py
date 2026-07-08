@@ -6,42 +6,21 @@
 # -------------------------
 
 ANY_WORDS = r"[\wăâîşșţțĂÂÎŞȘŢȚ]*"
-REGEX_OR = "|"
-# FIXME: Java value = "(?iu)"
-CASE_INSENSITIVE = ""
+# TODO: merge REGEX_PUNCTUATION with REGEX_PUNCTUATION_UNLIMITED into PUNCTUATION
 REGEX_PUNCTUATION = r"[\.,;\?!\-\s]"
 REGEX_PUNCTUATION_UNLIMITED = REGEX_PUNCTUATION + "*"
 
 # The separator must always be of the shape "(\s+-\s+)"
 REGEX_INTERVAL_DELIMITER = r"\s*(?:-|–|—)\s*"
-# TODO: check the if changing the old expression introduces bugs
-#  REGEX_INTERVAL_CONJUNCTION = r"\s*(?:-|–|—|([sşș]i))\s*"
 REGEX_INTERVAL_CONJUNCTION = r"\s*(?:-|–|—|\b[sşș]i\b)\s*"
 REGEX_INTERVAL_PREFIX = rf"(?:[iî]ntre|[iî]n\s*interval(?:ul|u)?)\s*"
 REGEX_DATE_SEPARATOR = r"[\./\-\s]+"
 
-# Regex for marking the start of the text
-TEXT_START = (
-        "("
-        # + "?<=" + "("
-        + "^" + REGEX_OR + r"\A" + REGEX_OR + r"[\.,;\?!\-(\[= ]+"
-        # + ")"
-        + ")"
-)
-# TEXT_START = r"(?:^|[\.,;?!\-\(\[= ]+)"
+# Negative lookbehind for marking the start of the text
+TEXT_START = r"(?<!\w)"
 
-# Regex for marking the end of the text
-TEXT_END = (
-        "("
-        # + "?=" + "("
-        + "$" + REGEX_OR + r"\Z" + REGEX_OR + r"[\.,;\?!\-\)\] ]+"
-        # + ")"
-        + ")"
-)
-
-# # FIXME: ???
-# TEXT_START = r"(?:(?<=^)|(?<=\A)|(?<=[\.,;\?!\-(\[= ]))"
-# TEXT_END   = r"(?:(?=$)|(?=\Z)|(?=[\.,;\?!\-\)\] ]))"
+# Negative lookahead for marking the end of the text
+TEXT_END = r"(?!\w)"
 
 # Regex for all possible values for Christum notation
 # E.g.: "ch"; "ch."; "chr"; "chr."; "hr"; "hr."
@@ -52,34 +31,28 @@ REGEX_CHRISTUM = r"(ch[r]?|hr|c)[\. ]*"
 # -------------------------
 
 # Anno Domini (After Christ)
-# TODO: remove
-# AGE_AD = (
-#         TEXT_START
-#         + CASE_INSENSITIVE
-#         + "("
-#         + "(" + r"e[\.]?n[\.]?" + ")" + REGEX_OR
-#         + "(" + r"[dp][\. ]*" + REGEX_CHRISTUM + ")"
-#         + ")"
-#         + TEXT_END
-# )
-AGE_AD = r"(?<!\w)((?:e\.?n\.?)|(?:[dp][\. ]*(?:ch[r]?|hr|c)[\. ]*))(?!\w)"
+AGE_AD = (
+        TEXT_START
+        + "("
+        + "(" + r"e[\.]?n[\.]?" + ")" + "|"
+        + "(" + r"[dp][\. ]*" + REGEX_CHRISTUM + ")"
+        + ")"
+        + TEXT_END
+)
 
 # Before Christ
-# TODO: remove
-# AGE_BC = (
-#         TEXT_START
-#         + CASE_INSENSITIVE
-#         + "("
-#         + "(" + r"[iî][\.]?e[\.]?n[\.]?" + ")" + REGEX_OR
-#         + "(" + r"[abiî][\. ]*" + REGEX_CHRISTUM + ")"
-#         + ")"
-#         + TEXT_END
-# )
-AGE_BC = r"(?<!\w)([abiî][\. ]*(?:ch[r]?|hr|c)[\. ]*)(?!\w)"
+AGE_BC = (
+        TEXT_START
+        + "("
+        + "(" + r"[iî][\.]?e[\.]?n[\.]?" + ")" + "|"
+        + "(" + r"[abiî][\. ]*" + REGEX_CHRISTUM + ")"
+        + ")"
+        + TEXT_END
+)
 
 # Anno Domini / Before Christ notation wrapper
 
-CHRISTUM_NOTATION = "(" + AGE_AD + REGEX_OR + AGE_BC + ")"
+CHRISTUM_NOTATION = "(" + AGE_AD + "|" + AGE_BC + ")"
 AD_BC_OPTIONAL = r"(\s*" + CHRISTUM_NOTATION + ")?"
 
 # -------------------------
@@ -91,9 +64,9 @@ MONTHS_DIGITS = r"(?:0?[1-9]|10|11|12)"
 MONTHS_RO = (
         "("
         + r"ianuarie|fe[bv]ruarie|martie|aprilie|mai|iu[mn]ie|iulie|august|septembrie|[o0]ctombrie|noiembrie|decembrie"
-        + REGEX_OR
+        + "|"
         + r"(ian|feb(r)?|mart|apr|iun|iul|aug|sept|[o0]ct|noi|dec)\."
-        + REGEX_OR
+        + "|"
         + r"noimbrie|decembre"
         + ")"
 )
@@ -101,12 +74,12 @@ MONTHS_RO = (
 MONTHS_EN = (
         "("
         + r"january|february|march|april|may|june|july|august|september|october|november|december"
-        + REGEX_OR
+        + "|"
         + r"(jan|feb|apr|jun|jul|aug|sep|oct|nov|dec)\."
         + ")"
 )
 
-MONTHS = "(" + MONTHS_RO + REGEX_OR + MONTHS_EN + REGEX_OR + MONTHS_DIGITS + ")"
+MONTHS = "(" + MONTHS_RO + "|" + MONTHS_EN + "|" + MONTHS_DIGITS + ")"
 
 # -------------------------
 # AGES NOTATIONS
@@ -137,7 +110,7 @@ AGES_ROMAN_NOTATION = (
         + ")"
 )
 
-AGES_NOTATIONS = "(" + AGES_ROMAN_NOTATION + REGEX_OR + AGES_ARABIC_NOTATION + ")"
+AGES_NOTATIONS = "(" + AGES_ROMAN_NOTATION + "|" + AGES_ARABIC_NOTATION + ")"
 
 # -------------------------
 # ARTICLES AND CENTURIES
@@ -190,8 +163,8 @@ REGEX_A_AL_POSTFIX = "(" + ANY_WORDS + r"[\.]*([\. ]+(a|al))*" + ")"
 FIRST_HALF = (
         "("
         + TEXT_START + "("
-        + r"(1/2)" + REGEX_OR
-        + r"(½)" + REGEX_OR
+        + r"(1/2)" + "|"
+        + r"(½)" + "|"
         + "(" + FIRST_HALF_STRING_REGEX + REGEX_A_AL_POSTFIX + ")"
         + ")" + TEXT_END
         + ")"
@@ -200,7 +173,7 @@ FIRST_HALF = (
 SECOND_HALF = (
         "("
         + TEXT_START + "("
-        + r"(2/2)" + REGEX_OR
+        + r"(2/2)" + "|"
         + "(" + SECOND_HALF_STRING_REGEX + REGEX_A_AL_POSTFIX + ")"
         + ")" + TEXT_END
         + ")"
@@ -219,10 +192,10 @@ MIDDLE_OF = (
 FIRST_QUARTER = (
         "("
         + TEXT_START + "("
-        + r"(1/4)" + REGEX_OR
-        + r"(¼)" + REGEX_OR
-        + "(" + r"([iî]nc" + ANY_WORDS + r"[\. ]*)" + r"(de)?" + ")" + REGEX_OR
-        + "(" + r"primul\s+sfert" + r"(\s+a[l]?)?" + ")" + REGEX_OR
+        + r"(1/4)" + "|"
+        + r"(¼)" + "|"
+        + "(" + r"([iî]nc" + ANY_WORDS + r"[\. ]*)" + r"(de)?" + ")" + "|"
+        + "(" + r"primul\s+sfert" + r"(\s+a[l]?)?" + ")" + "|"
         + "(" + r"prima treime a" + ")"
         + ")" + TEXT_END
         + ")"
@@ -231,7 +204,7 @@ FIRST_QUARTER = (
 SECOND_QUARTER = (
         "("
         + TEXT_START + "("
-        + r"(2/4)" + REGEX_OR
+        + r"(2/4)" + "|"
         + r"(al doile[a]? sfert al)"
         + ")" + TEXT_END
         + ")"
@@ -240,8 +213,8 @@ SECOND_QUARTER = (
 THIRD_QUARTER = (
         "("
         + TEXT_START + "("
-        + r"(3/4)" + REGEX_OR
-        + r"(¾)" + REGEX_OR
+        + r"(3/4)" + "|"
+        + r"(¾)" + "|"
         + r"(al treilea sfert al)"
         + ")" + TEXT_END
         + ")"
@@ -249,8 +222,9 @@ THIRD_QUARTER = (
 
 FORTH_QUARTER = (
         "("
-        + TEXT_START + "("
-        + r"(4/4)" + REGEX_OR
+        + TEXT_START
+        + "("
+        + r"(4/4)" + "|"
         + "(" + r"(ultimul\s+sfert)" + r"(\s+(a[l]?|de)*)?" + ")"
         + ")"
         + ")"

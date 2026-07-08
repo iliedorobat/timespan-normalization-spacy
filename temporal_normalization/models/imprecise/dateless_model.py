@@ -4,7 +4,6 @@ import re
 from dataclasses import dataclass
 
 from temporal_normalization.models.year_model import YearModel
-from temporal_normalization.rules import REGEX_OR
 from temporal_normalization.rules.imprecise import DATELESS_MODEL_X, DATELESS_UNDATED
 from temporal_normalization.rules.year import YEAR_INTERVAL_BASE, YEAR_INTERVAL_PREFIXED, YEAR_OPTIONS
 
@@ -16,7 +15,7 @@ class DatelessModel(YearModel):
     unde anul este dedus din pattern-uri alternative.
     """
 
-    PATTERN: str = rf"({YEAR_INTERVAL_PREFIXED}){REGEX_OR}({YEAR_INTERVAL_BASE})"
+    PATTERN: str = rf"({YEAR_INTERVAL_PREFIXED})|({YEAR_INTERVAL_BASE})"
 
     def __init__(self, original: str, value: str, regex_str: str, historical_only: bool):
         super().__init__()

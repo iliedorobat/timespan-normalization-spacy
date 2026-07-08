@@ -13,7 +13,6 @@ from temporal_normalization.commons_temporal import (
 from temporal_normalization.rules import (
     AGES_GROUP_SUFFIX,
     ARTICLE_AL,
-    CASE_INSENSITIVE,
     CENTURY_LABEL,
     FIRST_HALF,
     FIRST_QUARTER,
@@ -32,21 +31,21 @@ from temporal_normalization.rules import (
 SPECIAL_CHARS_REGEX = r"[\.,;\?!]*\s*"
 
 REGEX_LIST = [
-    CASE_INSENSITIVE + START_END,
-    CASE_INSENSITIVE + FIRST_HALF,
-    CASE_INSENSITIVE + SECOND_HALF,
-    CASE_INSENSITIVE + MIDDLE_OF,
-    CASE_INSENSITIVE + FIRST_QUARTER,
-    CASE_INSENSITIVE + SECOND_QUARTER,
-    CASE_INSENSITIVE + THIRD_QUARTER,
-    CASE_INSENSITIVE + FORTH_QUARTER,
-    CASE_INSENSITIVE + CENTURY_LABEL,
-    CASE_INSENSITIVE + MILLENNIUM_LABEL,
-    CASE_INSENSITIVE + YEAR_LABEL,
-    CASE_INSENSITIVE + AGES_GROUP_SUFFIX,
-    CASE_INSENSITIVE + ARTICLE_AL,
+    START_END,
+    FIRST_HALF,
+    SECOND_HALF,
+    MIDDLE_OF,
+    FIRST_QUARTER,
+    SECOND_QUARTER,
+    THIRD_QUARTER,
+    FORTH_QUARTER,
+    CENTURY_LABEL,
+    MILLENNIUM_LABEL,
+    YEAR_LABEL,
+    AGES_GROUP_SUFFIX,
+    ARTICLE_AL,
     SPECIAL_CHARS_REGEX,
-    ]
+]
 
 # =========================================================
 # Get the time period value from the input value
@@ -93,8 +92,8 @@ def sanitize_time_period_interval(value: str) -> str:
 def _get_group_list(value: str) -> List[str]:
     groups: Set[str] = set()
 
-    for regex in REGEX_LIST:
-        pattern = re.compile(regex, re.IGNORECASE)
+    for regex_str in REGEX_LIST:
+        pattern = re.compile(regex_str, re.IGNORECASE)
         for match in pattern.finditer(value):
             group = match.group()
 

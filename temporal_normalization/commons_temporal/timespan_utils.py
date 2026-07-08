@@ -30,10 +30,11 @@ from temporal_normalization.rules import (
     MILLENNIUM_REGEXES,
     OTHER_CENTURY_ROMAN_INTERVAL,
     OTHER_CENTURY_ROMAN_OPTIONS,
-    UNKNOWN,
+    UNKNOWN_REGEXES,
 )
 from temporal_normalization.rules.date import (
     DATE_DMY_INTERVAL,
+    DATE_DMY_INTERVAL_PARTIAL,
     DATE_YMD_INTERVAL,
     DATE_DMY_OPTIONS,
     DATE_YMD_OPTIONS,
@@ -88,9 +89,10 @@ def prepare_timespan_models(original: str, historical_only: bool, sanitize: bool
     residual_value = sanitize_value(original)
     timespan_models: List["TimespanModel"] = []
 
-    residual_value = update_matched_values(residual_value, timespan_models, historical_only, sanitize, UNKNOWN, TemporalType.UNKNOWN)
+    residual_value = update_matched_values(residual_value, timespan_models, historical_only, sanitize, UNKNOWN_REGEXES, TemporalType.UNKNOWN)
 
     residual_value = update_matched_values(residual_value, timespan_models, historical_only, sanitize, DATE_DMY_INTERVAL, TemporalType.DATE)
+    residual_value = update_matched_values(residual_value, timespan_models, historical_only, sanitize, DATE_DMY_INTERVAL_PARTIAL, TemporalType.DATE)
     residual_value = update_matched_values(residual_value, timespan_models, historical_only, sanitize, DATE_YMD_INTERVAL, TemporalType.DATE)
     residual_value = update_matched_values(residual_value, timespan_models, historical_only, sanitize, DATE_MY_INTERVAL, TemporalType.DATE)
     residual_value = update_matched_values(residual_value, timespan_models, historical_only, sanitize, DATE_DMY_OPTIONS, TemporalType.DATE)

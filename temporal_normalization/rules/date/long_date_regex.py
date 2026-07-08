@@ -19,6 +19,6 @@ LONG_DATE_OPTIONS = (
         + r"$"
 )
 
-LONG_DATE_REGEXES = {
+LONG_DATE_REGEXES = [
     LONG_DATE_OPTIONS
-}
+]
