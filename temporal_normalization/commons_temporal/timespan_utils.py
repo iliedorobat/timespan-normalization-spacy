@@ -182,7 +182,7 @@ def update_matched_values(
         elif matched_items == matched_value:
             print(f'The following group has not been processed: "{matched_value}"')
 
-    residual_value = regex.sub(regex_str, EMPTY_VALUE_PLACEHOLDER, residual_value)
+    residual_value = regex.sub(regex_str, EMPTY_VALUE_PLACEHOLDER, residual_value, flags=regex.IGNORECASE)
 
     return residual_value
 
