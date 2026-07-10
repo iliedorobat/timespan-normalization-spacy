@@ -79,7 +79,7 @@ def validate_inp_data(dataset_type: str):
         for entity in doc.ents:
             if isinstance(entity._.time_series, list):
                 for entry in entity._.time_series:
-                    InpOutputFile.write_timespan_entry(dataset_type, entry)
+                    InpOutputFile.write_timespan_entry(dataset_type, entry, doc.text)
             else:
                 InpOutputFile.write_empty_entry(dataset_type, entity.text)
 

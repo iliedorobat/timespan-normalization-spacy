@@ -1,6 +1,5 @@
 import re
 from dataclasses import dataclass
-from typing import Optional
 
 import regex
 
@@ -78,7 +77,7 @@ class EraInfo:
 class RomanParseResult:
     value: str
     is_valid: bool
-    integer: Optional[int]
+    integer: int | None
 
 
 @dataclass(frozen=True)

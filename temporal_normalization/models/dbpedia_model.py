@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Optional
 
 from temporal_normalization.commons_temporal import (
     CHRISTUM_BC_LABEL,
@@ -33,7 +32,7 @@ class DBpediaModel:
     uri: str = None
     matched_type: TemporalType = None
     matched_value: str = None
-    label: Optional[str] = None
+    label: str | None = None
 
     def __init__(self, uri: str, matched_type: str, matched_value: str):
         self.uri = uri
@@ -56,7 +55,7 @@ class DBpediaModel:
         )
 
     @staticmethod
-    def prepare_uri(era: str, value: Optional[int], matched_type: str) -> Optional[str]:
+    def prepare_uri(era: str, value: int | None, matched_type: str) -> str | None:
         """
         Convert an integer time unit into a DBpedia URI.
 
@@ -92,10 +91,10 @@ class DBpediaModel:
         return None
 
     @staticmethod
-    def tree_set_to_dbpedia_string(tree_set):
+    def tree_set_to_dbpedia_string(items: list[str]):
         return STRING_LIST_SEPARATOR.join(
             f"{NS_DBPEDIA_RESOURCE}{item}"
-            for item in sorted(tree_set)
+            for item in items
         )
 
     @staticmethod

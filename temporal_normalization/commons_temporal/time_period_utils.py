@@ -1,5 +1,4 @@
 import re
-from typing import List, Optional, Set
 
 import regex
 
@@ -89,8 +88,8 @@ def sanitize_time_period_interval(value: str) -> str:
 # =========================================================
 
 
-def _get_group_list(value: str) -> List[str]:
-    groups: Set[str] = set()
+def _get_group_list(value: str) -> list[str]:
+    groups: set[str] = set()
 
     for regex_str in REGEX_LIST:
         pattern = re.compile(regex_str, re.IGNORECASE)
@@ -127,7 +126,7 @@ def _special_chars_only(value: str) -> bool:
 # =========================================================
 
 
-def time_period_to_number(time_period: str, is_date: bool) -> Optional[int]:
+def time_period_to_number(time_period: str, is_date: bool) -> int | None:
     # E.g.: "1/2 mil. 5 - sec. i al mil. 4 a.chr."
     if time_period is None or time_period.strip() == "":
         return None
@@ -153,7 +152,7 @@ def time_period_to_number(time_period: str, is_date: bool) -> Optional[int]:
 # =========================================================
 
 
-def get_start_time(interval_values: List[str], era_start: str, is_date: bool) -> Optional[int]:
+def get_start_time(interval_values: list[str], era_start: str, is_date: bool) -> int | None:
     first = time_period_to_number(interval_values[0], is_date)
     second = time_period_to_number(interval_values[1], is_date)
 
@@ -175,7 +174,7 @@ def get_start_time(interval_values: List[str], era_start: str, is_date: bool) ->
 # =========================================================
 
 
-def get_end_time(interval_values: List[str], era_start: str, is_date: bool) -> Optional[int]:
+def get_end_time(interval_values: list[str], era_start: str, is_date: bool) -> int | None:
     first = time_period_to_number(interval_values[0], is_date)
     second = time_period_to_number(interval_values[1], is_date)
 

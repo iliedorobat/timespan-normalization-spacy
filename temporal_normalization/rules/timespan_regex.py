@@ -65,7 +65,7 @@ MONTHS_RO = (
         "("
         + r"ianuarie|fe[bv]ruarie|martie|aprilie|mai|iu[mn]ie|iulie|august|septembrie|[o0]ctombrie|noiembrie|decembrie"
         + "|"
-        + r"(ian|feb(r)?|mart|apr|iun|iul|aug|sept|[o0]ct|noi|dec)\."
+        + r"(ian|feb(r)?|mart|apr|iun|iul|aug|sept|[o0]ct|noi|dec)\.?"
         + "|"
         + r"noimbrie|decembre"
         + ")"
@@ -75,7 +75,7 @@ MONTHS_EN = (
         "("
         + r"january|february|march|april|may|june|july|august|september|october|november|december"
         + "|"
-        + r"(jan|feb|apr|jun|jul|aug|sep|oct|nov|dec)\."
+        + r"(jan|feb|apr|jun|jul|aug|sep|oct|nov|dec)\.?"
         + ")"
 )
 

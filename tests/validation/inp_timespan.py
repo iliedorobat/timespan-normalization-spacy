@@ -1,6 +1,7 @@
 import os
 from pathlib import Path
 
+from temporal_normalization.commons_temporal import normalize_christum_notation
 from temporal_normalization.time_expression import TimeSeries
 
 
@@ -67,17 +68,15 @@ class InpOutputFile:
     def write_timespan_entry(
         dataset_type: str,
         time_series: TimeSeries,
+        doc_text: str,
     ):
         with open(
             InpOutputFile.get_output_path(dataset_type), "a", encoding="utf-8"
         ) as csv_file:
             entry = "|".join(
                 [
-                    # FIXME: pass input_value & prepared_value
-                    # time_series.input_value,
-                    # time_series.prepared_value,
-                    "input_value",
-                    "prepared_value",
+                    doc_text,
+                    normalize_christum_notation(doc_text),
                     f"[{{start={time_series.edges.start.uri}, end={time_series.edges.end.uri}}}]",
                     _list_to_string([period.uri for period in time_series.periods]),
                 ]

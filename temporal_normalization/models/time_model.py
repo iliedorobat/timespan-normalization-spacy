@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Optional
 
 from temporal_normalization.commons_temporal import (
     CHRISTUM_AD_PLACEHOLDER,
@@ -27,20 +26,20 @@ from temporal_normalization.errors.too_big_date import (
 
 @dataclass
 class TimeModel:
-    era_start: Optional[str] = None
-    era_end: Optional[str] = None
+    era_start: str | None = None
+    era_end: str | None = None
 
-    millennium_start: Optional[int] = None
-    millennium_end: Optional[int] = None
+    millennium_start: int | None = None
+    millennium_end: int | None = None
 
-    century_start: Optional[int] = None
-    century_end: Optional[int] = None
+    century_start: int | None = None
+    century_end: int | None = None
 
-    year_start: Optional[int] = None
-    year_end: Optional[int] = None
+    year_start: int | None = None
+    year_end: int | None = None
 
-    month_start: Optional[str] = None
-    month_end: Optional[str] = None
+    month_start: str | None = None
+    month_end: str | None = None
 
     day_start: int = 0
     day_end: int = 0

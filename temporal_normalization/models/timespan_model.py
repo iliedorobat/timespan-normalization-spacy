@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import Set, List, Optional
 
 from temporal_normalization.commons_temporal import EMPTY_VALUE_PLACEHOLDER, TemporalType
 from temporal_normalization.models.dbpedia_model import DBpediaModel
@@ -19,8 +18,8 @@ class EdgeModel:
         end (DBpediaModel): The ending entity of the time period.
     """
 
-    start: Optional[DBpediaModel] = None
-    end: Optional[DBpediaModel] = None
+    start: DBpediaModel | None = None
+    end: DBpediaModel | None = None
 
     def __repr__(self):
         return f"EdgeModel(start={self.start}, end={self.end})"
@@ -36,19 +35,19 @@ class EdgeModel:
 class TimespanModel:
     residual_value: str = EMPTY_VALUE_PLACEHOLDER
     edges: EdgeModel = field(default_factory=EdgeModel())
-    periods: Set[DBpediaModel] = field(default_factory=set)
+    periods: list[DBpediaModel] = field(default_factory=list)
 
     def __init__(
             self,
             time_period: TimePeriodModel,
-            matched_list: List[str],
+            matched_list: list[str],
             matched_value: str,
             matched_type: TemporalType,
             residual_value: str,
     ):
         self.residual_value = residual_value or EMPTY_VALUE_PLACEHOLDER
         self.edges = EdgeModel()
-        self.periods = set()
+        self.periods = []
 
         # TODO: pass matched_type instead of matched_type.value
         self.set_dbpedia_edges(time_period, matched_type.value, matched_value)
@@ -61,7 +60,7 @@ class TimespanModel:
     def get_dbpedia_edges(self) -> EdgeModel:
         return self.edges
 
-    def get_dbpedia_items(self) -> Set[DBpediaModel]:
+    def get_dbpedia_items(self) -> list[DBpediaModel]:
         return self.periods
 
     def get_residual_value(self) -> str:
@@ -87,16 +86,16 @@ class TimespanModel:
 
     def set_dbpedia_items(
             self,
-            matched_list: List[str],
+            matched_list: list[str],
             matched_type: str,
             matched_value: str,
     ):
-        items = {
+        items = [
             DBpediaModel(uri, matched_type, matched_value)
             for uri in matched_list
-        }
+        ]
 
-        self.periods.update(items)
+        self.periods += items
 
     def set_residual_value(self, residual_value: str):
         self.residual_value = residual_value

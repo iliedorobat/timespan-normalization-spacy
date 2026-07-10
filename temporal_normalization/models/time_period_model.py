@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Optional, Set
 
 import regex
 
@@ -48,9 +47,9 @@ class TimePeriodModel(TimeModel):
     # =========================================================
 
     def __str__(self) -> str:
-        time_period_set: Set[str] = set()
+        time_period_list: list[str] = []
 
-        millennium_set = self.get_millennium_set(
+        millennium_list = self.get_millennium_set(
             self.era_start,
             self.era_end,
             self.millennium_start,
@@ -58,7 +57,7 @@ class TimePeriodModel(TimeModel):
             True,
         )
 
-        century_set = self.get_century_set(
+        century_list = self.get_century_set(
             self.era_start,
             self.era_end,
             self.century_start,
@@ -66,7 +65,7 @@ class TimePeriodModel(TimeModel):
             True,
         )
 
-        year_set = self.get_year_set(
+        year_list = self.get_year_set(
             self.era_start,
             self.era_end,
             self.year_start,
@@ -74,17 +73,17 @@ class TimePeriodModel(TimeModel):
             False,
         )
 
-        time_period_set.update(millennium_set)
-        time_period_set.update(century_set)
-        time_period_set.update(year_set)
+        time_period_list += millennium_list
+        time_period_list += century_list
+        time_period_list += sorted(year_list)
 
-        return DBpediaModel.tree_set_to_dbpedia_string(time_period_set)
+        return DBpediaModel.tree_set_to_dbpedia_string(time_period_list)
 
     # =========================================================
     # DBpedia URI mapping
     # =========================================================
 
-    def to_dbpedia_start_uri(self, matched_type: str) -> Optional[str]:
+    def to_dbpedia_start_uri(self, matched_type: str) -> str | None:
         if matched_type is None:
             return None
 
@@ -99,7 +98,7 @@ class TimePeriodModel(TimeModel):
 
         return None
 
-    def to_dbpedia_end_uri(self, matched_type: str) -> Optional[str]:
+    def to_dbpedia_end_uri(self, matched_type: str) -> str | None:
         if matched_type is None:
             return None
 
@@ -133,10 +132,10 @@ class TimePeriodModel(TimeModel):
     def get_millennium_set(
             era_start: str,
             era_end: str,
-            millennium_start: Optional[int],
-            millennium_end: Optional[int],
+            millennium_start: int | None,
+            millennium_end: int | None,
             ordinal: bool,
-    ) -> Set[str]:
+    ) -> list[str]:
         return TimePeriodModel.get_timeperiod_set(
             era_start,
             era_end,
@@ -150,10 +149,10 @@ class TimePeriodModel(TimeModel):
     def get_century_set(
             era_start: str,
             era_end: str,
-            century_start: Optional[int],
-            century_end: Optional[int],
+            century_start: int | None,
+            century_end: int | None,
             ordinal: bool,
-    ) -> Set[str]:
+    ) -> list[str]:
         return TimePeriodModel.get_timeperiod_set(
             era_start,
             era_end,
@@ -167,10 +166,10 @@ class TimePeriodModel(TimeModel):
     def get_year_set(
             era_start: str,
             era_end: str,
-            year_start: Optional[int],
-            year_end: Optional[int],
+            year_start: int | None,
+            year_end: int | None,
             ordinal: bool,
-    ) -> Set[str]:
+    ) -> list[str]:
         return TimePeriodModel.get_timeperiod_set(
             era_start,
             era_end,
@@ -188,12 +187,12 @@ class TimePeriodModel(TimeModel):
     def get_timeperiod_set(
             era_start: str,
             era_end: str,
-            start: Optional[int],
-            end: Optional[int],
+            start: int | None,
+            end: int | None,
             time_placeholder: str,
             ordinal: bool,
-    ) -> Set[str]:
-        result: Set[str] = set()
+    ) -> list[str]:
+        result: list[str] = []
 
         if start is None or end is None:
             return result
@@ -224,7 +223,7 @@ class TimePeriodModel(TimeModel):
             time_start: int,
             time_end: int,
             time_placeholder: str,
-            time_set: Set[str],
+            time_list: list[str],
             ordinal: bool,
     ):
         """
@@ -244,7 +243,7 @@ class TimePeriodModel(TimeModel):
                     if ordinal
                     else str(time_period)
                 )
-                time_set.add(period + time_placeholder)
+                time_list.append(period + time_placeholder)
 
     # =========================================================
     # SAME BC
@@ -257,7 +256,7 @@ class TimePeriodModel(TimeModel):
             time_start: int,
             time_end: int,
             time_placeholder: str,
-            time_set: Set[str],
+            time_list: list[str],
             ordinal: bool,
     ):
         """
@@ -278,7 +277,7 @@ class TimePeriodModel(TimeModel):
                     else str(time_period)
                 )
 
-                time_set.add(
+                time_list.append(
                     period
                     + time_placeholder
                     + UNDERSCORE_PLACEHOLDER
@@ -296,7 +295,7 @@ class TimePeriodModel(TimeModel):
             time_start: int,
             time_end: int,
             time_placeholder: str,
-            time_set: Set[str],
+            time_list: list[str],
             ordinal: bool,
     ):
         if (
@@ -309,7 +308,7 @@ class TimePeriodModel(TimeModel):
                 time_start,
                 1,
                 time_placeholder,
-                time_set,
+                time_list,
                 ordinal,
             )
 
@@ -319,7 +318,7 @@ class TimePeriodModel(TimeModel):
                 1,
                 time_end,
                 time_placeholder,
-                time_set,
+                time_list,
                 ordinal,
             )
 
@@ -334,7 +333,7 @@ class TimePeriodModel(TimeModel):
             time_start: int,
             time_end: int,
             time_placeholder: str,
-            time_set: Set[str],
+            time_list: list[str],
             ordinal: bool,
     ):
         if (
@@ -347,7 +346,7 @@ class TimePeriodModel(TimeModel):
                 time_end,
                 1,
                 time_placeholder,
-                time_set,
+                time_list,
                 ordinal,
             )
 
@@ -357,6 +356,6 @@ class TimePeriodModel(TimeModel):
                 1,
                 time_start,
                 time_placeholder,
-                time_set,
+                time_list,
                 ordinal,
             )

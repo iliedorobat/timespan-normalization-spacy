@@ -67,12 +67,16 @@ YEAR_GROUP_1 = (
 )
 
 # Prevents matching day-month expressions like "23 martie" and hour-minutes expressions like "18.05"
-YEAR_GROUP_2 = r"(?<!\d)" + r"(?:\d{2,3})" + rf"(?!\s*(?:{MONTHS})|\.\d)" + r"\b"
+YEAR_GROUP_2 = r"(?<!\d)" + r"(?:\d{1,3})" + rf"(?!:|\s*(?:{MONTHS})|\.\d)" + r"\b"
 
-YEAR_GROUP = rf"(?<![\d\.])({YEAR_GROUP_1}|{YEAR_GROUP_2}){EXCLUDED_POSTFIX}"
+YEAR_GROUP_LONG = rf"(?<![\d\.]){YEAR_GROUP_1}{EXCLUDED_POSTFIX}"
+YEAR_GROUP_SHORT = rf"(?<![\d\.]){YEAR_GROUP_2}{EXCLUDED_POSTFIX}"
 
+YEAR_LONG = TEXT_START + "(" + YEAR_LABEL + ")?" + YEAR_GROUP_LONG + AD_BC_OPTIONAL + TEXT_END
+YEAR_SHORT = TEXT_START + YEAR_LABEL + YEAR_GROUP_SHORT + AD_BC_OPTIONAL + TEXT_END
+
+YEAR_GROUP = rf"(?:{YEAR_LONG}|{YEAR_SHORT})"
 YEAR_NOTATION = EXCLUDED_PREFIX + YEAR_GROUP + AD_BC_OPTIONAL
-
 YEAR = TEXT_START + "(" + YEAR_LABEL + ")?" + YEAR_NOTATION + TEXT_END
 
 YEAR_ITEMS = [

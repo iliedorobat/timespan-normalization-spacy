@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import json
 from dataclasses import dataclass, field, asdict
-from typing import Dict, List, Set
+from typing import Dict, List
 
 from temporal_normalization.commons_temporal import normalize_christum_notation
 from temporal_normalization.commons_temporal.time_sanitize_utils import sanitize_value
@@ -110,11 +110,11 @@ class TimeExpression:
 
         return edges
 
-    def get_dbpedia_items(self) -> Set[DBpediaModel]:
-        items: Set[DBpediaModel] = set()
+    def get_dbpedia_items(self) -> List[DBpediaModel]:
+        items: List[DBpediaModel] = []
 
         for timespan_model in self.timespan_models:
-            items.update(timespan_model.get_dbpedia_items())
+            items += timespan_model.get_dbpedia_items()
 
         return items
 
