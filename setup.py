@@ -2,8 +2,9 @@ from setuptools import setup, find_packages
 
 setup(
     name="temporal_normalization_spacy",
-    version="2.2.2",
+    version="2.3.0",
     author="Ilie Cristian Dorobat",
+    author_email="ic.dorobat@gmail.com",
     description="A spaCy plugin for temporal normalization and extraction of "
     "historical dates in Romanian narrative texts.",
     keywords="spacy, nlp, temporal normalization, timex, historical dates, romanian",
@@ -18,7 +19,7 @@ setup(
         ],
     },
     package_data={
-        "temporal_normalization.libs": ["temporal-normalization-2.1.0.jar"],
+        "temporal_normalization.libs": ["temporal-normalization-2.2.0.jar"],
     },
     install_requires=[
         "spacy>=3.8.7,<4.0.0",

@@ -26,7 +26,7 @@ def start_conn(root_path: str) -> tuple[subprocess.Popen, JavaGateway]:
 
     Note:
         - Requires Java 11 or higher to be installed and accessible in the system PATH.
-        - Requires `temporal-normalization-2.1.0.jar` to be present in the `libs` directory.
+        - Requires `temporal-normalization-2.2.0.jar` to be present in the `libs` directory.
         - The caller is responsible for closing the gateway and terminating the Java process
             after usage to avoid orphaned processes.
     """
@@ -34,7 +34,7 @@ def start_conn(root_path: str) -> tuple[subprocess.Popen, JavaGateway]:
     check_java_version()
 
     jar_path = (
-        f"{root_path}/temporal_normalization/libs/temporal-normalization-2.1.0.jar"
+        f"{root_path}/temporal_normalization/libs/temporal-normalization-2.2.0.jar"
     )
 
     def stdout_callback(line: str):

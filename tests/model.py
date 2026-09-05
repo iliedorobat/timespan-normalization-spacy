@@ -1,6 +1,3 @@
-import subprocess
-import sys
-
 import spacy
 from spacy import Language
 from spacy.cli import download
