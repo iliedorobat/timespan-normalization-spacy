@@ -6,6 +6,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ## 2.3.0
 ### Changed
 - Bump TeN Framework 2.2.0 (changed https://dbpedia.org/page/ to https://dbpedia.org/resource/)
+- Expanded spaCy compatibility to support versions >=3.8.7,<4.0.0
+- Fixed cleanup errors when Java gateway initialization fails during component initialization
+- Improved support for applications using Flask's debug reloader
+- Improved Java Gateway startup handling to immediately report port binding failures
 
 ## 2.2.2
 ### Changed

@@ -43,6 +43,11 @@ class TemporalNormalization:
         self.nlp = nlp
         self.count = 0
 
+        # Initialize connection attributes before starting the Java gateway, as initialization may fail
+        # (e.g., during Flask's debug reloader), and __del__() may still be called on a partial instance.
+        self.java_process = None
+        self.gateway = None
+
         root_path = str(Path(__file__).resolve().parent.parent)
         java_process, gateway = start_conn(root_path)
         self.java_process: subprocess.Popen = java_process
@@ -97,7 +102,10 @@ class TemporalNormalization:
         network sockets that might otherwise persist after the Python process ends.
         """
 
-        close_conn(self.java_process, self.gateway)
+        if self.java_process is not None or self.gateway is not None:
+            close_conn(self.java_process, self.gateway)
+        else:
+            print(f"⚠️ No Java process or Python connection to close.")
 
 
 def _prepare_str_patterns(expressions: list[TemporalExpression]) -> list[str]:
