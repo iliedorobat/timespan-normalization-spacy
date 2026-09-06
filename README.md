@@ -47,12 +47,11 @@ quality and reliability of date-related information extracted from text.
 
 
 ## Getting started
-To integrate TeNs into spaCy pipelines you need the following:
 
 ### Prerequisites
 - Python 3.9-3.12
 - JRE 11-17
-- spaCy 3.x
+- spaCy >=3.8.7,<4.0.0
 - py4j 0.10.9.9
 - langdetect 1.0.9
 
@@ -202,24 +201,24 @@ Start Edge:
 	Matched value: Sec al II-lea a.ch.
 	Matched Type: century
 	Normalized label: 2nd century BC
-	DBpedia uri: https://dbpedia.org/page/2nd_century_BC
+	DBpedia uri: https://dbpedia.org/resource/2nd_century_BC
 
 End Edge:
 	Matched value: Sec al II-lea a.ch.
 	Matched Type: century
 	Normalized label: 2nd century BC
-	DBpedia uri: https://dbpedia.org/page/2nd_century_BC
+	DBpedia uri: https://dbpedia.org/resource/2nd_century_BC
 
 Periods:
 	Matched value: Sec al II-lea a.ch.
 	Matched Type: century
 	Normalized label: 1st millennium BC
-	DBpedia uri: https://dbpedia.org/page/1st_millennium_BC
+	DBpedia uri: https://dbpedia.org/resource/1st_millennium_BC
 
 	Matched value: Sec al II-lea a.ch.
 	Matched Type: century
 	Normalized label: 2nd century BC
-	DBpedia uri: https://dbpedia.org/page/2nd_century_BC
+	DBpedia uri: https://dbpedia.org/resource/2nd_century_BC
 ```
 
 ### Second Sentence
@@ -228,24 +227,24 @@ Start Edge:
 	Matched value: secolul XX
 	Matched Type: century
 	Normalized label: 20th century
-	DBpedia uri: https://dbpedia.org/page/20th_century
+	DBpedia uri: https://dbpedia.org/resource/20th_century
 
 End Edge:
 	Matched value: secolul XX
 	Matched Type: century
 	Normalized label: 20th century
-	DBpedia uri: https://dbpedia.org/page/20th_century
+	DBpedia uri: https://dbpedia.org/resource/20th_century
 
 Periods:
 	Matched value: secolul XX
 	Matched Type: century
 	Normalized label: 2nd millennium
-	DBpedia uri: https://dbpedia.org/page/2nd_millennium
+	DBpedia uri: https://dbpedia.org/resource/2nd_millennium
 
 	Matched value: secolul XX
 	Matched Type: century
 	Normalized label: 20th century
-	DBpedia uri: https://dbpedia.org/page/20th_century
+	DBpedia uri: https://dbpedia.org/resource/20th_century
 ```
 
 ### Third Sentence
@@ -254,24 +253,24 @@ Start Edge:
 	Matched value: Sec. 21
 	Matched Type: century
 	Normalized label: 21st century
-	DBpedia uri: https://dbpedia.org/page/21st_century
+	DBpedia uri: https://dbpedia.org/resource/21st_century
 
 End Edge:
 	Matched value: Sec. 21
 	Matched Type: century
 	Normalized label: 21st century
-	DBpedia uri: https://dbpedia.org/page/21st_century
+	DBpedia uri: https://dbpedia.org/resource/21st_century
 
 Periods:
 	Matched value: Sec. 21
 	Matched Type: century
 	Normalized label: 3rd millennium
-	DBpedia uri: https://dbpedia.org/page/3rd_millennium
+	DBpedia uri: https://dbpedia.org/resource/3rd_millennium
 
 	Matched value: Sec. 21
 	Matched Type: century
 	Normalized label: 21st century
-	DBpedia uri: https://dbpedia.org/page/21st_century
+	DBpedia uri: https://dbpedia.org/resource/21st_century
 ```
 
 
