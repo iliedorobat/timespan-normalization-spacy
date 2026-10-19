@@ -1,6 +1,8 @@
 import os
 from pathlib import Path
 
+from spacy.tokens import Span
+
 from temporal_normalization import TimeSeries
 
 
@@ -23,15 +25,15 @@ class InpInputFile:
 
 class InpOutputFile:
     @staticmethod
-    def get_output_path(dataset_type: str) -> str:
-        path = f"{str(Path(__file__).resolve().parent)}/files/output/inp_{dataset_type}.csv"
+    def get_output_path(filename: str) -> str:
+        path = f"{str(Path(__file__).resolve().parent)}/files/output/inp_{filename}.csv"
         os.makedirs(os.path.dirname(path), exist_ok=True)
 
         return path
 
     @staticmethod
-    def write_header(dataset_type: str) -> None:
-        path = InpOutputFile.get_output_path(dataset_type)
+    def write_header(filename: str) -> None:
+        path = InpOutputFile.get_output_path(filename)
         os.makedirs(os.path.dirname(path), exist_ok=True)
 
         with open(path, "w", encoding="utf-8") as csv_file:
@@ -47,11 +49,11 @@ class InpOutputFile:
 
     @staticmethod
     def write_empty_entry(
-        dataset_type: str,
+        filename: str,
         entity_text: str,
     ):
         with open(
-            InpOutputFile.get_output_path(dataset_type), "a", encoding="utf-8"
+            InpOutputFile.get_output_path(filename), "a", encoding="utf-8"
         ) as csv_file:
             entry = "|".join(
                 [
@@ -64,12 +66,20 @@ class InpOutputFile:
             csv_file.write(entry + "\n")
 
     @staticmethod
+    def write_entity_entries(filename: str, entity: Span):
+        if isinstance(entity._.time_series, list):
+            for entry in entity._.time_series:
+                InpOutputFile.write_timespan_entry(filename, entry)
+        else:
+            InpOutputFile.write_empty_entry(filename, entity.text)
+
+    @staticmethod
     def write_timespan_entry(
-        dataset_type: str,
+        filename: str,
         time_series: TimeSeries,
     ):
         with open(
-            InpOutputFile.get_output_path(dataset_type), "a", encoding="utf-8"
+            InpOutputFile.get_output_path(filename), "a", encoding="utf-8"
         ) as csv_file:
             entry = "|".join(
                 [

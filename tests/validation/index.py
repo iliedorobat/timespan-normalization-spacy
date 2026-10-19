@@ -7,6 +7,7 @@ from inp_timespan import InpInputFile, InpOutputFile
 from ronec_timespan import Ronec, RonecOutputFile
 from temporal_normalization import start_conn, close_conn
 from tests.model import load_model
+from tests.validation.inp_raw_timespan import InpRawOutputFile
 from tests.validation.ronec_mock_data import ronec_example
 from tests.validation.ronec_raw_timespan import RonecRawOutputFile
 
@@ -19,8 +20,7 @@ class PipelineType(Enum):
 
 
 # print(nlp.get_pipe("ner").labels)
-# TODO: add doc for <pipeline_type>
-def validate_ronec_corpus(dataset_type: str, pipeline_type: PipelineType=PipelineType.TENS, mock_data: bool = False):
+def validate_ronec_corpus(dataset_type: str, pipeline_type: PipelineType=PipelineType.TENS, mock_data: bool=False):
     """
     Runs a validation loop over a specified dataset (e.g., ``validation``, ``test``,
     or ``train``), applying a spaCy model to all temporal expressions and writing the
@@ -33,6 +33,8 @@ def validate_ronec_corpus(dataset_type: str, pipeline_type: PipelineType=Pipelin
     Args:
         dataset_type (str): The name of the dataset split to validate. Expected values:
                             ``validation``, ``test``, and ``train``.
+        pipeline_type (PipelineType): Type of the pipeline. Expected values: ``spacy``,
+                            and ``tens``
         mock_data (bool): Whether to use a mocked example dataset (useful for testing).
                           Defaults to False.
 
@@ -92,7 +94,7 @@ def validate_ronec_corpus(dataset_type: str, pipeline_type: PipelineType=Pipelin
         print(f"{dataset_type}: no. of date and periods entries = {total_rows}")
         print(f"{dataset_type}: TOTAL no. of date and periods = {total_timespans}")
     finally:
-        # Close gateway once at the end
+        # Close the gateway once at the end
         if pipeline_type == PipelineType.SPACY:
             try:
                 close_conn(java_process, gateway)
@@ -100,20 +102,39 @@ def validate_ronec_corpus(dataset_type: str, pipeline_type: PipelineType=Pipelin
                 pass
 
 
-def validate_inp_data(dataset_type: str):
-    nlp = load_model(MODEL)
-    InpOutputFile.write_header(dataset_type)
+def validate_inp_data(dataset_type: str, pipeline_type: PipelineType=PipelineType.TENS):
+    include_pipeline = pipeline_type == PipelineType.TENS
+    nlp = load_model(MODEL, include_pipeline)
+
+    # Start gateway once for SPACY pipeline
+    java_process = None
+    gateway = None
+    if pipeline_type == PipelineType.SPACY:
+        root_path = str(Path(__file__).resolve().parent.parent.parent)
+        java_process, gateway = start_conn(root_path)
+
+    if pipeline_type == PipelineType.SPACY:
+        InpRawOutputFile.write_header(dataset_type + "_raw")
+    elif pipeline_type == PipelineType.TENS:
+        InpOutputFile.write_header(dataset_type)
     raw_timespans = InpInputFile.read_file(dataset_type)
 
-    for raw_timespan in raw_timespans:
-        doc = nlp(raw_timespan)
+    try:
+        for raw_timespan in raw_timespans:
+            doc = nlp(raw_timespan)
 
-        for entity in doc.ents:
-            if isinstance(entity._.time_series, list):
-                for entry in entity._.time_series:
-                    InpOutputFile.write_timespan_entry(dataset_type, entry)
-            else:
-                InpOutputFile.write_empty_entry(dataset_type, entity.text)
+            for entity in doc.ents:
+                if pipeline_type == PipelineType.SPACY:
+                    InpRawOutputFile.write_entity_entries(dataset_type + "_raw", entity, gateway)
+                elif pipeline_type == PipelineType.TENS:
+                    InpOutputFile.write_entity_entries(dataset_type, entity)
+    finally:
+        # Close the gateway once at the end
+        if pipeline_type == PipelineType.SPACY:
+            try:
+                close_conn(java_process, gateway)
+            except Exception:
+                pass
 
 
 if __name__ == "__main__":
@@ -123,6 +144,11 @@ if __name__ == "__main__":
     validate_ronec_corpus("validation", PipelineType.TENS)
     validate_ronec_corpus("test", PipelineType.TENS)
 
-    validate_inp_data("additional")
-    validate_inp_data("unique")
-    # validate_inp_data("all")
+    validate_inp_data("additional", PipelineType.SPACY)
+    validate_inp_data("additional", PipelineType.TENS)
+
+    validate_inp_data("unique", PipelineType.SPACY)
+    validate_inp_data("unique", PipelineType.TENS)
+
+    # # validate_inp_data("all", PipelineType.SPACY)
+    # # validate_inp_data("all", PipelineType.TENS)

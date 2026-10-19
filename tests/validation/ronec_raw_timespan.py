@@ -1,6 +1,7 @@
 from spacy.tokens import Span, Doc
 
 from temporal_normalization import TemporalExpression, extract_temporal_expressions, TimeSeries
+from tests.validation.normalization.utils import extract_year
 from tests.validation.ronec_timespan import RonecOutputFile
 from tests.validation.ronec_types import Ronec, RonecTimespan
 
@@ -47,7 +48,7 @@ class RonecRawOutputFile(RonecOutputFile):
         with open(
             RonecRawOutputFile.get_output_path(filename), "a", encoding="utf-8"
         ) as csv_file:
-            start, end, matches = _extract_year(entity_text, gateway)
+            start, end, matches = extract_year(entity_text, gateway)
             entry = "|".join(
                 [
                     str(ronec_entry.sent["id"]),
@@ -61,23 +62,3 @@ class RonecRawOutputFile(RonecOutputFile):
                 ]
             )
             csv_file.write(entry + "\n")
-
-
-def _extract_year(text: str, gateway) -> tuple[str, str, str]:
-    try:
-        expressions: list[TemporalExpression] = extract_temporal_expressions(
-            gateway, text
-        )
-
-        if len(expressions) and len(expressions[0].time_series):
-            edges = expressions[0].time_series[0].edges
-            matches = expressions[0].matches
-            start = edges.start.label
-            end = edges.end.label
-
-            return start, end, " ## ".join(matches)
-
-        return text, text, text
-    except Exception as e:
-        print(f"Error: {e}")
-        return text, text, text
