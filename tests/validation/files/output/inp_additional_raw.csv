@@ -1,0 +1,196 @@
+input value|matches|start|end
+1784|1784|1784|1784
+aprilie 1785|aprilie 1785|1785|1785
+19|19|19|19
+2010|2010|2010|2010
+19|19|19|19
+03|03|3|3
+2010|2010|2010|2010
+19 martie -26 noiembrie 2010|19 martie -26 noiembrie 2010|2010|2010
+19.02|19.02|19.02|19.02
+19.02-|19.02-|19.02-|19.02-
+26.11.2010|26.11.2010|2010|2010
+23 decembrie|23 decembrie|23 decembrie|23 decembrie
+30 august|30 august|30 august|30 august
+38 de ani|38 de ani|38 de ani|38 de ani
+38 săptămâni|38 săptămâni|38 săptămâni|38 săptămâni
+IN INTERVAL 2004 - 2008|IN INTERVAL 2004 - 2008|2004|2008
+IN INTERVAL 2004 SI 2008|IN INTERVAL 2004 SI 2008|2004|2008
+IN INTERVAL|IN INTERVAL|IN INTERVAL|IN INTERVAL
+2004|2004|2004|2004
+2008|2008|2008|2008
+2008|2008|2008|2008
+anilor 1960-1970|anilor 1960-1970|1960|1970
+de an 1990|an 1990|1990|1990
+Sfârșitul anului 1990|Sfârșitul anului 1990|1990|1990
+10|10|10|10
+noiembrie 1784|noiembrie 1784|1784|1784
+1785|1785|1785|1785
+noiembrie 1784|noiembrie 1784|1784|1784
+aprilie 1785|aprilie 1785|1785|1785
+de an 1990|an 1990|1990|1990
+anului 1990|anului 1990|1990|1990
+de an 1990|an 1990|1990|1990
+Începutul anului 1990|Începutul anului 1990|1990|1990
+Între anii 1990 - 1995|Între anii 1990 - 1995|1990|1995
+2004|2004|2004|2004
+2008|2008|2008|2008
+2004|2004|2004|2004
+2008|2008|2008|2008
+2004|2004|2004|2004
+2008|2008|2008|2008
+2 a. chr|2 a. chr|2 a. chr|2 a. chr
+1/2 mil|1/2 mil|1/2 mil|1/2 mil
+3|3|3|3
+sec|sec|sec|sec
+2 a. chr|2 a. chr|2 a. chr|2 a. chr
+1/2 sec|1/2 sec|1/2 sec|1/2 sec
+3|3|3|3
+2004|2004|2004|2004
+2008|2008|2008|2008
+intervalu 2004 și 2008|2008 ## 2004|2004|2004
+2004|2004|2004|2004
+2008|2008|2008|2008
+2 a. chr|2 a. chr|2 a. chr|2 a. chr
+1/2 mil|1/2 mil|1/2 mil|1/2 mil
+3|3|3|3
+sec.|sec.|sec.|sec.
+2 a. chr|2 a. chr|2 a. chr|2 a. chr
+1/2 sec|1/2 sec|1/2 sec|1/2 sec
+3|3|3|3
+intervalul 2004 - 2008|2004 - 2008|2004|2008
+intervalul 2004 și 2008|2008 ## 2004|2004|2004
+intervalul 2004 – 2008|2004 – 2008|2004|2008
+intervalul mil|intervalul mil|intervalul mil|intervalul mil
+2 a. chr|2 a. chr|2 a. chr|2 a. chr
+1/2 mil|1/2 mil|1/2 mil|1/2 mil
+3|3|3|3
+intervalul sec.|intervalul sec.|intervalul sec.|intervalul sec.
+2 a. chr|2 a. chr|2 a. chr|2 a. chr
+1/2 sec|1/2 sec|1/2 sec|1/2 sec
+3|3|3|3
+între 2004 - 2008|între 2004 - 2008|2004|2008
+între 2004 şi 2008|între 2004 şi 2008|2004|2008
+între 2004 și 2008|între 2004 și 2008|2004|2008
+între 2004 – 2008|între 2004 – 2008|2004|2008
+2 a. chr|2 a. chr|2 a. chr|2 a. chr
+1/2 mil|1/2 mil|1/2 mil|1/2 mil
+3|3|3|3
+2 a. chr|2 a. chr|2 a. chr|2 a. chr
+1/2 mil|1/2 mil|1/2 mil|1/2 mil
+3|3|3|3
+2 a. chr|2 a. chr|2 a. chr|2 a. chr
+3|3|3|3
+2 a. chr|2 a. chr|2 a. chr|2 a. chr
+1/2 mil|1/2 mil|1/2 mil|1/2 mil
+3|3|3|3
+2|2|2|2
+1/2 mil|1/2 mil|1/2 mil|1/2 mil
+3|3|3|3
+2|2|2|2
+1/2 mil|1/2 mil|1/2 mil|1/2 mil
+3|3|3|3
+3|3|3|3
+3|3|3|3
+1/2 mil|1/2 mil|1/2 mil|1/2 mil
+2 p. chr|2 p. chr|2 p. chr|2 p. chr
+4|4|4|4
+1/2 mil|1/2 mil|1/2 mil|1/2 mil
+2|2|2|2
+4|4|4|4
+1/2 mil|1/2 mil|1/2 mil|1/2 mil
+2 a. chr|2 a. chr|2 a. chr|2 a. chr
+al 2-lea|al 2-lea|al 2-lea|al 2-lea
+a. chr|a. chr|a. chr|a. chr
+3|3|3|3
+al 2-lea|al 2-lea|al 2-lea|al 2-lea
+a. chr|a. chr|a. chr|a. chr
+al 3-lea|al 3-lea|al 3-lea|al 3-lea
+al ii|al ii|al ii|al ii
+al iii-lea|al iii-lea|al iii-lea|al iii-lea
+al ii|al ii|al ii|al ii
+iii|iii|iii|iii
+ii|ii|ii|ii
+a. chr|a. chr|a. chr|a. chr
+1/2 mil|1/2 mil|1/2 mil|1/2 mil
+iii|iii|iii|iii
+ii|ii|ii|ii
+a. chr|a. chr|a. chr|a. chr
+iii|iii|iii|iii
+1/2 mil|1/2 mil|1/2 mil|1/2 mil
+iii|iii|iii|iii
+1/2 mil|1/2 mil|1/2 mil|1/2 mil
+iii|iii|iii|iii
+iii|iii|iii|iii
+iii|iii|iii|iii
+1/2 mil|1/2 mil|1/2 mil|1/2 mil
+ii|ii|ii|ii
+p. chr|p. chr|p. chr|p. chr
+1/2 mil|1/2 mil|1/2 mil|1/2 mil
+ii|ii|ii|ii
+1/2 mil|1/2 mil|1/2 mil|1/2 mil
+a. chr|a. chr|a. chr|a. chr
+între sec.|între sec.|între sec.|între sec.
+2 a. chr|2 a. chr|2 a. chr|2 a. chr
+1/2 sec.|1/2 sec.|1/2 sec.|1/2 sec.
+3|3|3|3
+între sec.|între sec.|între sec.|între sec.
+2 a. chr|2 a. chr|2 a. chr|2 a. chr
+1/2 sec.|1/2 sec.|1/2 sec.|1/2 sec.
+3|3|3|3
+între sec.|între sec.|între sec.|între sec.
+2 a. chr|2 a. chr|2 a. chr|2 a. chr
+3|3|3|3
+între sec.|între sec.|între sec.|între sec.
+2 a. chr|2 a. chr|2 a. chr|2 a. chr
+1/2 sec.|1/2 sec.|1/2 sec.|1/2 sec.
+3|3|3|3
+între sec.|între sec.|între sec.|între sec.
+1/2 sec.|1/2 sec.|1/2 sec.|1/2 sec.
+3|3|3|3
+între sec.|între sec.|între sec.|între sec.
+1/2 sec.|1/2 sec.|1/2 sec.|1/2 sec.
+3|3|3|3
+între sec|între sec|între sec|între sec
+3|3|3|3
+între sec.|între sec.|între sec.|între sec.
+4|4|4|4
+1/2 sec.|1/2 sec.|1/2 sec.|1/2 sec.
+2|2|2|2
+între sec.|între sec.|între sec.|între sec.
+4|4|4|4
+1/2 sec|1/2 sec|1/2 sec|1/2 sec
+între sec.|între sec.|între sec.|între sec.
+4|4|4|4
+1/2 sec|1/2 sec|1/2 sec|1/2 sec
+2 p. chr|2 p. chr|2 p. chr|2 p. chr
+între sec.|între sec.|între sec.|între sec.
+a. chr|a. chr|a. chr|a. chr
+3|3|3|3
+între sec.|între sec.|între sec.|între sec.
+a. chr|a. chr|a. chr|a. chr
+al 3-lea|al 3-lea|al 3-lea|al 3-lea
+între sec.|între sec.|între sec.|între sec.
+al iii-lea|al iii-lea|al iii-lea|al iii-lea
+între sec.|între sec.|între sec.|între sec.
+iii|iii|iii|iii
+între sec.|între sec.|între sec.|între sec.
+a. chr|a. chr|a. chr|a. chr
+1/2 sec.|1/2 sec.|1/2 sec.|1/2 sec.
+între sec.|între sec.|între sec.|între sec.
+a. chr|a. chr|a. chr|a. chr
+iii|iii|iii|iii
+între sec.|între sec.|între sec.|între sec.
+1/2 sec.|1/2 sec.|1/2 sec.|1/2 sec.
+între sec.|între sec.|între sec.|între sec.
+1/2 sec.|1/2 sec.|1/2 sec.|1/2 sec.
+între sec.|între sec.|între sec.|între sec.
+iii|iii|iii|iii
+între sec|între sec|între sec|între sec
+1/2 sec.|1/2 sec.|1/2 sec.|1/2 sec.
+între sec|între sec|între sec|între sec
+1/2 sec|1/2 sec|1/2 sec|1/2 sec
+a. chr|a. chr|a. chr|a. chr
+între sec|între sec|între sec|între sec
+1/2 sec|1/2 sec|1/2 sec|1/2 sec
+p. chr|p. chr|p. chr|p. chr

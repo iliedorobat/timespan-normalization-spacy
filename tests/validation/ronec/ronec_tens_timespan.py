@@ -1,16 +1,15 @@
 import os
-from pathlib import Path
 
 from spacy.tokens import Span, Doc
 
 from temporal_normalization import TimeSeries
-from tests.validation.ronec_types import Ronec, RonecTimespan
+from tests.validation.ronec.ronec_types import Ronec, RonecTimespan
 
 
-class RonecOutputFile:
+class RonecTensOutputFile:
     @staticmethod
     def get_output_path(filename: str) -> str:
-        path = f"{str(Path(__file__).resolve().parent)}/files/output/{filename}.csv"
+        path = f"{os.getcwd()}/tests/validation/files/output/{filename}.csv"
         os.makedirs(os.path.dirname(path), exist_ok=True)
 
         return path
@@ -22,13 +21,13 @@ class RonecOutputFile:
         counter = 0
 
         for entity in doc.ents:
-            RonecOutputFile.write_entity_entries(
+            RonecTensOutputFile.write_entity_entries(
                 filename, ronec_entry, ronec_timespan, entity
             )
             counter += 1
 
         if counter == 0:
-            RonecOutputFile.write_empty_entry(
+            RonecTensOutputFile.write_empty_entry(
                 filename, ronec_entry, ronec_timespan, None
             )
 
@@ -44,22 +43,22 @@ class RonecOutputFile:
         if isinstance(time_series, list):
             for ts in time_series:
                 if isinstance(ts, TimeSeries):
-                    RonecOutputFile.write_timespan_entry(
+                    RonecTensOutputFile.write_timespan_entry(
                         filename, ronec_entry, ronec_timespan, entity.text, ts
                     )
                 else:
-                    RonecOutputFile.write_empty_entry(
+                    RonecTensOutputFile.write_empty_entry(
                         filename, ronec_entry, ronec_timespan, entity.text
                     )
         else:
-            RonecOutputFile.write_empty_entry(
+            RonecTensOutputFile.write_empty_entry(
                 filename, ronec_entry, ronec_timespan, entity.text
             )
 
     @staticmethod
     def write_header(filename: str) -> None:
         with open(
-            RonecOutputFile.get_output_path(filename), "w", encoding="utf-8"
+            RonecTensOutputFile.get_output_path(filename), "w", encoding="utf-8"
         ) as csv_file:
             entry = "|".join(
                 [
@@ -83,7 +82,7 @@ class RonecOutputFile:
         entity_text: str | None,
     ) -> None:
         with open(
-            RonecOutputFile.get_output_path(filename), "a", encoding="utf-8"
+            RonecTensOutputFile.get_output_path(filename), "a", encoding="utf-8"
         ) as csv_file:
             entry = "|".join(
                 [
@@ -108,7 +107,7 @@ class RonecOutputFile:
         time_series: TimeSeries | None,
     ) -> None:
         with open(
-            RonecOutputFile.get_output_path(filename), "a", encoding="utf-8"
+            RonecTensOutputFile.get_output_path(filename), "a", encoding="utf-8"
         ) as csv_file:
             entry = "|".join(
                 [

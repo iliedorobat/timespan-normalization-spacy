@@ -3,9 +3,10 @@ All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 ---
 
-## 2.3.1
+## 2.4.0
 ### Added
-- Support for automatically choosing the gateway port.
+- Support for automatically choosing the gateway port
+- Tests for a simple spaCy use case
 
 ### Changed
 - Bump TeN Framework 2.2.1 (support for providing a custom gateway port)

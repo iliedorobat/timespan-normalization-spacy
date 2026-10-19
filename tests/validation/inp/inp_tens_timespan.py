@@ -2,14 +2,14 @@ import os
 
 from spacy.tokens import Span
 
-from tests.validation.inp_timespan import InpOutputFile
-from tests.validation.normalization.utils import extract_year
+from tests.validation.inp.inp_spacy_timespan import InpSpacyOutputFile
+from tests.validation.timespan_utils import extract_year
 
 
-class InpRawOutputFile(InpOutputFile):
+class InpTensOutputFile(InpSpacyOutputFile):
     @staticmethod
     def write_header(filename: str) -> None:
-        path = InpOutputFile.get_output_path(filename)
+        path = InpSpacyOutputFile.get_output_path(filename)
         os.makedirs(os.path.dirname(path), exist_ok=True)
 
         with open(path, "w", encoding="utf-8") as csv_file:
@@ -25,7 +25,7 @@ class InpRawOutputFile(InpOutputFile):
 
     @staticmethod
     def write_entity_entries(filename: str, entity: Span, gateway=None):
-        InpRawOutputFile.write_timespan_entry(filename, entity.text, gateway)
+        InpTensOutputFile.write_timespan_entry(filename, entity.text, gateway)
 
     @staticmethod
     def write_timespan_entry(
@@ -34,7 +34,7 @@ class InpRawOutputFile(InpOutputFile):
         gateway=None,
     ):
         with open(
-            InpOutputFile.get_output_path(filename), "a", encoding="utf-8"
+            InpSpacyOutputFile.get_output_path(filename), "a", encoding="utf-8"
         ) as csv_file:
             start, end, matches = extract_year(entity_text, gateway)
             entry = "|".join(

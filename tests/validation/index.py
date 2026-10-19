@@ -1,15 +1,15 @@
+import os
 from enum import Enum
-from pathlib import Path
 
 from datasets import load_dataset
 
-from inp_timespan import InpInputFile, InpOutputFile
-from ronec_timespan import Ronec, RonecOutputFile
 from temporal_normalization import start_conn, close_conn
 from tests.model import load_model
-from tests.validation.inp_raw_timespan import InpRawOutputFile
-from tests.validation.ronec_mock_data import ronec_example
-from tests.validation.ronec_raw_timespan import RonecRawOutputFile
+from tests.validation.inp.inp_spacy_timespan import InpInputFile, InpSpacyOutputFile
+from tests.validation.inp.inp_tens_timespan import InpTensOutputFile
+from tests.validation.ronec.ronec_mock_data import ronec_example
+from tests.validation.ronec.ronec_spacy_timespan import RonecSpacyOutputFile
+from tests.validation.ronec.ronec_tens_timespan import Ronec, RonecTensOutputFile
 
 MODEL = "ro_core_news_sm"
 
@@ -61,15 +61,15 @@ def validate_ronec_corpus(dataset_type: str, pipeline_type: PipelineType=Pipelin
     java_process = None
     gateway = None
     if pipeline_type == PipelineType.SPACY:
-        root_path = str(Path(__file__).resolve().parent.parent.parent)
+        root_path = os.getcwd()
         java_process, gateway = start_conn(root_path)
 
     try:
         ronec = ronec_example if mock_data else load_dataset("ronec")
         if pipeline_type == PipelineType.SPACY:
-            RonecRawOutputFile.write_header(dataset_type + "_raw")
+            RonecSpacyOutputFile.write_header(dataset_type + "_raw")
         elif pipeline_type == PipelineType.TENS:
-            RonecOutputFile.write_header(dataset_type)
+            RonecTensOutputFile.write_header(dataset_type)
         dataset = ronec[dataset_type]
         total_rows = 0
         total_timespans = 0
@@ -86,9 +86,9 @@ def validate_ronec_corpus(dataset_type: str, pipeline_type: PipelineType=Pipelin
                 for timespan in ronec_entry.timespans:
                     doc = nlp(timespan.text)
                     if pipeline_type == PipelineType.SPACY:
-                        RonecRawOutputFile.write_entities_entries(dataset_type + "_raw", ronec_entry, timespan, doc, gateway)
+                        RonecSpacyOutputFile.write_entities_entries(dataset_type + "_raw", ronec_entry, timespan, doc, gateway)
                     elif pipeline_type == PipelineType.TENS:
-                        RonecOutputFile.write_entities_entries(dataset_type, ronec_entry, timespan, doc)
+                        RonecTensOutputFile.write_entities_entries(dataset_type, ronec_entry, timespan, doc)
                     total_timespans += 1
 
         print(f"{dataset_type}: no. of date and periods entries = {total_rows}")
@@ -110,24 +110,25 @@ def validate_inp_data(dataset_type: str, pipeline_type: PipelineType=PipelineTyp
     java_process = None
     gateway = None
     if pipeline_type == PipelineType.SPACY:
-        root_path = str(Path(__file__).resolve().parent.parent.parent)
+        root_path = os.getcwd()
         java_process, gateway = start_conn(root_path)
 
     if pipeline_type == PipelineType.SPACY:
-        InpRawOutputFile.write_header(dataset_type + "_raw")
+        InpTensOutputFile.write_header(dataset_type + "_raw")
     elif pipeline_type == PipelineType.TENS:
-        InpOutputFile.write_header(dataset_type)
+        InpSpacyOutputFile.write_header(dataset_type)
     raw_timespans = InpInputFile.read_file(dataset_type)
 
     try:
-        for raw_timespan in raw_timespans:
+        for i, raw_timespan in enumerate(raw_timespans):
+            print(f"i = {i}")
             doc = nlp(raw_timespan)
 
             for entity in doc.ents:
                 if pipeline_type == PipelineType.SPACY:
-                    InpRawOutputFile.write_entity_entries(dataset_type + "_raw", entity, gateway)
+                    InpTensOutputFile.write_entity_entries(dataset_type + "_raw", entity, gateway)
                 elif pipeline_type == PipelineType.TENS:
-                    InpOutputFile.write_entity_entries(dataset_type, entity)
+                    InpSpacyOutputFile.write_entity_entries(dataset_type, entity)
     finally:
         # Close the gateway once at the end
         if pipeline_type == PipelineType.SPACY:
@@ -150,5 +151,5 @@ if __name__ == "__main__":
     validate_inp_data("unique", PipelineType.SPACY)
     validate_inp_data("unique", PipelineType.TENS)
 
-    # # validate_inp_data("all", PipelineType.SPACY)
-    # # validate_inp_data("all", PipelineType.TENS)
+    # validate_inp_data("all", PipelineType.SPACY)
+    # validate_inp_data("all", PipelineType.TENS)

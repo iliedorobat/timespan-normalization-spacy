@@ -1,5 +1,4 @@
 import os
-from pathlib import Path
 
 from spacy.tokens import Span
 
@@ -9,7 +8,7 @@ from temporal_normalization import TimeSeries
 class InpInputFile:
     @staticmethod
     def get_input_path(dataset_type: str) -> str:
-        path = f"{str(Path(__file__).resolve().parent)}/files/input/timespan_{dataset_type}.txt"
+        path = f"{os.getcwd()}/tests/validation/files/input/timespan_{dataset_type}.txt"
         os.makedirs(os.path.dirname(path), exist_ok=True)
 
         return path
@@ -23,17 +22,17 @@ class InpInputFile:
             return content.split("\n")
 
 
-class InpOutputFile:
+class InpSpacyOutputFile:
     @staticmethod
     def get_output_path(filename: str) -> str:
-        path = f"{str(Path(__file__).resolve().parent)}/files/output/inp_{filename}.csv"
+        path = f"{os.getcwd()}/tests/validation/files/output/inp_{filename}.csv"
         os.makedirs(os.path.dirname(path), exist_ok=True)
 
         return path
 
     @staticmethod
     def write_header(filename: str) -> None:
-        path = InpOutputFile.get_output_path(filename)
+        path = InpSpacyOutputFile.get_output_path(filename)
         os.makedirs(os.path.dirname(path), exist_ok=True)
 
         with open(path, "w", encoding="utf-8") as csv_file:
@@ -53,7 +52,7 @@ class InpOutputFile:
         entity_text: str,
     ):
         with open(
-            InpOutputFile.get_output_path(filename), "a", encoding="utf-8"
+            InpSpacyOutputFile.get_output_path(filename), "a", encoding="utf-8"
         ) as csv_file:
             entry = "|".join(
                 [
@@ -69,9 +68,9 @@ class InpOutputFile:
     def write_entity_entries(filename: str, entity: Span):
         if isinstance(entity._.time_series, list):
             for entry in entity._.time_series:
-                InpOutputFile.write_timespan_entry(filename, entry)
+                InpSpacyOutputFile.write_timespan_entry(filename, entry)
         else:
-            InpOutputFile.write_empty_entry(filename, entity.text)
+            InpSpacyOutputFile.write_empty_entry(filename, entity.text)
 
     @staticmethod
     def write_timespan_entry(
@@ -79,7 +78,7 @@ class InpOutputFile:
         time_series: TimeSeries,
     ):
         with open(
-            InpOutputFile.get_output_path(filename), "a", encoding="utf-8"
+            InpSpacyOutputFile.get_output_path(filename), "a", encoding="utf-8"
         ) as csv_file:
             entry = "|".join(
                 [

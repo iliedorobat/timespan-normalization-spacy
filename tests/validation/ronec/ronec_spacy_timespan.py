@@ -1,12 +1,12 @@
 from spacy.tokens import Span, Doc
 
-from temporal_normalization import TemporalExpression, extract_temporal_expressions, TimeSeries
-from tests.validation.normalization.utils import extract_year
-from tests.validation.ronec_timespan import RonecOutputFile
-from tests.validation.ronec_types import Ronec, RonecTimespan
+from temporal_normalization import TimeSeries
+from tests.validation.ronec.ronec_tens_timespan import RonecTensOutputFile
+from tests.validation.ronec.ronec_types import Ronec, RonecTimespan
+from tests.validation.timespan_utils import extract_year
 
 
-class RonecRawOutputFile(RonecOutputFile):
+class RonecSpacyOutputFile(RonecTensOutputFile):
     @staticmethod
     def write_entities_entries(
         filename: str, ronec_entry: Ronec, ronec_timespan: RonecTimespan, doc: Doc, gateway=None
@@ -14,13 +14,13 @@ class RonecRawOutputFile(RonecOutputFile):
         counter = 0
 
         for entity in doc.ents:
-            RonecRawOutputFile.write_entity_entries(
+            RonecSpacyOutputFile.write_entity_entries(
                 filename, ronec_entry, ronec_timespan, entity, gateway
             )
             counter += 1
 
         if counter == 0:
-            RonecRawOutputFile.write_empty_entry(
+            RonecSpacyOutputFile.write_empty_entry(
                 filename, ronec_entry, ronec_timespan, None
             )
     @staticmethod
@@ -32,7 +32,7 @@ class RonecRawOutputFile(RonecOutputFile):
         gateway=None
     ) -> None:
         if entity.label_ in ["DATETIME", "PERIOD"]:
-            RonecRawOutputFile.write_timespan_entry(
+            RonecSpacyOutputFile.write_timespan_entry(
                 filename, ronec_entry, ronec_timespan, entity.text, None, gateway
             )
 
@@ -46,7 +46,7 @@ class RonecRawOutputFile(RonecOutputFile):
         gateway=None,
     ) -> None:
         with open(
-            RonecRawOutputFile.get_output_path(filename), "a", encoding="utf-8"
+            RonecSpacyOutputFile.get_output_path(filename), "a", encoding="utf-8"
         ) as csv_file:
             start, end, matches = extract_year(entity_text, gateway)
             entry = "|".join(
