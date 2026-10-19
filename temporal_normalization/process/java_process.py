@@ -1,6 +1,8 @@
 import io
+import random
 import re
 import shutil
+import socket
 import subprocess
 import threading
 import time
@@ -11,12 +13,16 @@ from py4j.protocol import Py4JNetworkError
 from temporal_normalization.commons.print_utils import console
 
 
-def start_conn(root_path: str) -> tuple[subprocess.Popen, JavaGateway]:
+_DEFAULT_GATEWAY_PORT = 25333
+
+
+def start_conn(root_path: str, max_attempts: int = 10) -> tuple[subprocess.Popen, JavaGateway]:
     """
     Starts the Java temporal normalization process and establishes a Py4J gateway connection.
 
     Args:
         root_path (str): The root directory of the project.
+        max_attempts (int): Maximum number of retry attempts if port binding fails.
 
     Returns:
         tuple[subprocess.Popen, JavaGateway]:
@@ -25,22 +31,26 @@ def start_conn(root_path: str) -> tuple[subprocess.Popen, JavaGateway]:
 
     Note:
         - Requires Java 11 or higher to be installed and accessible in the system PATH.
-        - Requires `temporal-normalization-2.2.0.jar` to be present in the `libs` directory.
+        - Requires `temporal-normalization-2.2.1.jar` to be present in the `libs` directory.
         - The caller is responsible for closing the gateway and terminating the Java process
             after usage to avoid orphaned processes.
+        - Will automatically retry with cleanup if port binding fails.
     """
 
     check_java_version()
 
+    jar_path = (
+        f"{root_path}/temporal_normalization/libs/temporal-normalization-2.2.1.jar"
+    )
+
+    gateway_port = _find_available_port(max_attempts=max_attempts)
+    print(f"Starting Java Gateway on port {gateway_port}")
+
     gateway_started = threading.Event()
     gateway_error = threading.Event()
 
-    jar_path = (
-        f"{root_path}/temporal_normalization/libs/temporal-normalization-2.2.0.jar"
-    )
-
     def stdout_callback(line: str):
-        if "Gateway Server Started" in line:
+        if "gateway server successfully started" in line.lower():
             gateway_started.set()
         print(line.strip())
 
@@ -52,7 +62,7 @@ def start_conn(root_path: str) -> tuple[subprocess.Popen, JavaGateway]:
             gateway_error.set()
 
     java_process = subprocess.Popen(
-        ["java", "-jar", jar_path, "--python"],
+        ["java", "-jar", jar_path, "--python", f"--gateway-port={gateway_port}"],
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
         text=True,
@@ -70,6 +80,7 @@ def start_conn(root_path: str) -> tuple[subprocess.Popen, JavaGateway]:
 
             if java_process.poll() is None:
                 java_process.terminate()
+                java_process.wait(timeout=5)
 
             raise RuntimeError(
                 "Java Gateway failed to start.\n"
@@ -83,18 +94,24 @@ def start_conn(root_path: str) -> tuple[subprocess.Popen, JavaGateway]:
             java_process.wait()
 
             raise RuntimeError(
-                f"Java Gateway did not start within 10 seconds.\n"
+                f"Java Gateway did not start within {timeout} seconds.\n"
                 f"Java stderr:\n\t{error}"
             )
 
         time.sleep(0.1)
 
     gateway = JavaGateway(
-        gateway_parameters=GatewayParameters(auto_convert=True, read_timeout=None),
+        gateway_parameters=GatewayParameters(
+            address="127.0.0.1",
+            port=gateway_port,
+            auto_convert=True,
+            read_timeout=None,
+            eager_load=True,
+        ),
         callback_server_parameters=None,
     )
 
-    print("Python connection established.")
+    print("✅ Python connection established.")
 
     return java_process, gateway
 
@@ -268,6 +285,52 @@ def check_java_version() -> None:
             console.error("Java not found.")
     except Exception as e:
         console.error(e.__str__())
+
+
+def _is_port_available(port: int) -> bool:
+    """
+    Check if a given port is available for binding.
+
+    Args:
+        port (int): The port number to check.
+
+    Returns:
+        bool: True if the port is available, False otherwise.
+    """
+    try:
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+            s.bind(('127.0.0.1', port))
+            return True
+    except OSError:
+        return False
+
+
+def _find_available_port(start_port: int = _DEFAULT_GATEWAY_PORT, max_attempts: int = 10) -> int:
+    """
+    Find an available port starting from the given port number.
+
+    Args:
+        start_port (int): The initial port to try.
+        max_attempts (int): Maximum number of ports to check.
+
+    Returns:
+        int: An available port number.
+
+    Raises:
+        RuntimeError: If no available port is found within max_attempts.
+    """
+    for offset in range(max_attempts):
+        port = start_port + offset
+        if _is_port_available(port):
+            return port
+
+    # If sequential search fails, try random ports
+    for _ in range(max_attempts):
+        port = random.randint(_DEFAULT_GATEWAY_PORT, 35333)
+        if _is_port_available(port):
+            return port
+
+    raise RuntimeError(f"Could not find an available port after {max_attempts * 2} attempts")
 
 
 if __name__ == "__main__":

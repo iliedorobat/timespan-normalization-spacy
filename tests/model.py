@@ -5,13 +5,14 @@ from spacy.cli import download
 from temporal_normalization import console
 
 
-def load_model(model_name: str) -> Language:
+def load_model(model_name: str, include_pipeline: bool=True) -> Language:
     """
     Loads a spaCy language model by name, downloading it if necessary,
     and adds the ``temporal_normalization`` pipeline component.
 
     Args:
         model_name (str): The name of the spaCy model to load (e.g., ``ro_core_news_sm``).
+        include_pipeline (bool): Include or not the "temporal_normalization" pipeline.
 
     Returns:
         Language: The loaded spaCy language model with the temporal normalization component added.
@@ -36,7 +37,8 @@ def load_model(model_name: str) -> Language:
         # Load the spaCy model
         nlp = spacy.load(model_name)
 
-    # Add "temporal_normalization" component to the spaCy pipeline
-    nlp.add_pipe("temporal_normalization", last=True)
+    if include_pipeline:
+        # Add "temporal_normalization" component to the spaCy pipeline
+        nlp.add_pipe("temporal_normalization", last=True)
 
     return nlp

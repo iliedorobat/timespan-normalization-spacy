@@ -19,7 +19,7 @@ setup(
         ],
     },
     package_data={
-        "temporal_normalization.libs": ["temporal-normalization-2.2.0.jar"],
+        "temporal_normalization.libs": ["temporal-normalization-2.2.1.jar"],
     },
     install_requires=[
         "spacy>=3.8.7,<4.0.0",
