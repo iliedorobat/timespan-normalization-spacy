@@ -29,7 +29,6 @@ def gateway_support(func: Callable):
         bound_args.apply_defaults()
 
         pipeline_type = bound_args.arguments["pipeline_type"]
-
         include_pipeline = pipeline_type == PipelineType.TENS
         nlp = load_model(MODEL, include_pipeline)
 
@@ -147,10 +146,10 @@ if __name__ == "__main__":
     validate_ronec_corpus("test", PipelineType.TENS)
 
     validate_inp_data("additional", PipelineType.SPACY)
-    validate_inp_data("additional", PipelineType.TENS)
-
     validate_inp_data("unique", PipelineType.SPACY)
-    validate_inp_data("unique", PipelineType.TENS)
-
     # validate_inp_data("all", PipelineType.SPACY)
+
+    validate_inp_data("additional", PipelineType.TENS)
+    validate_inp_data("unique", PipelineType.TENS)
     # validate_inp_data("all", PipelineType.TENS)
+
